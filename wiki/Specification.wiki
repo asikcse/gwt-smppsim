@@ -1,10 +1,14 @@
 #summary Project specification.
 
+== Tools ==
+
 SMPPSim is a GPL-licensed application which simulates a SMPP SMSC, and offers a web user interface through which one can send Mobile Originated messages to one's SMPP-supporting application.
 
 Google Web Toolkit is Google's rapid web user interface development environment for Java.
 
-In this project, you will use GWT to create a better user interface for SMPPSim, and extend SMPPSim to also support Mobile Terminated message support.
+== Requirements ==
+
+In this project, Gateway Technolabs will use GWT to create a better user interface for SMPPSim, and extend SMPPSim to also support Mobile Terminated message support.
 
 When a user loads this interface in their web browser, they are assigned a fake mobile number, which they can then use to send and receive messages through SMPPSim.
 
