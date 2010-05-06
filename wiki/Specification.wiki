@@ -1,0 +1,42 @@
+#summary Project specification.
+
+SMPPSim is a GPL-licensed application which simulates a SMPP SMSC, and offers a web user interface through which one can send Mobile Originated messages to one's SMPP-supporting application.
+
+Google Web Toolkit is Google's rapid web user interface development environment for Java.
+
+In this project, you will use GWT to create a better user interface for SMPPSim, and extend SMPPSim to also support Mobile Terminated message support.
+
+When a user loads this interface in their web browser, they are assigned a fake mobile number, which they can then use to send and receive messages through SMPPSim.
+
+When the SMPP-based application connected to SMPPSim through SMPP submits a Mobile Terminated message, it pops out in that user's user interface who has selected the fake mobile number which is found in the MT SMS message SMPPSim receives from the application.
+
+When the user submits a Mobile Originated fake SMS message, that also shows up on that user's log and user interface, as shown in the user interface mockup on this page.
+
+The user can change their fake handset number at any time, at which time the application will load that number's message log to its user interface. When two simultaneous users have selected the same number, they both are able to see the same MO/MT message logs, and are both able to send and receive messages.
+
+User interface mockup:
+
+{{{
+________________________________________________________________________________
+|                                                                              |
+| Handset number:    #############################   [Change]                  |
+| Service number:    #############################   [Send Message]            |
+| Message:                                                                     |
+|          #############################                                       |
+|          #############################                                       |
+|          #############################                                       |
+|                                                                              |
+|  Mobile Originated messages                      Mobile Terminated messages  |
+|  2010-05-03 12:12.12 [040123123->16123]                                      |
+|  This is a Mobile Originated message 5.                                      |
+|                                      2010-05-03 12:10.00 [16123->040123123]  |
+|                                      This is a Mobile Terminated message 4.  |
+|  2010-05-03 12:05.00 [040123123->16123]                                      |
+|  This is a Mobile Originated message 3.                                      |
+|  2010-05-03 12:04.00 [040123123->16123]                                      |
+|  This is a Mobile Originated message 2.                                      |
+|                                      2010-05-03 12:02.00 [16123->040123123]  |
+|                                      This is a Mobile Terminated message 1.  |
+|                                                                              |
+|______________________________________________________________________________|
+}}}
