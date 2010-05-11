@@ -44,3 +44,9 @@ ________________________________________________________________________________
 |                                                                              |
 |______________________________________________________________________________|
 }}}
+
+The application is to be used by multiple simultaneous users (tens of users, not thousands) so that each user sees the messages to/from the handset number they have chosen. If two people simultaneously select the same handset number, they should see the same messages.
+
+There is no requirement to save the sent messages, so the application can use the JDK built-in database Derby.
+
+The application must be mindful of the GSM 03.38 standard character sets, and if the user tries to send characters which don't fit in ISO-LATIN character set, the application must create one or multiple chained UCS2-encoded messages. Please see SMPP 3.4 standard "5.2.19 data_coding".
