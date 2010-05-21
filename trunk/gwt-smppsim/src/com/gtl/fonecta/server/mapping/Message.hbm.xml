@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!--     Mapping file -->
+<hibernate-mapping>
+	<class name="com.gtl.fonecta.client.bean.Message" table="message">
+
+		<id name="msgId" type="java.lang.Integer" >
+			<column name="msgId" />
+			<generator class="increment"/>
+		</id>
+
+		<property name="source_addr" type="java.lang.Long">
+			<column name="source_addr" />
+		</property>
+
+		<property name="dest_addr" type="java.lang.Long">
+			<column name="dest_addr" />
+		</property>
+
+		<property name="short_message" type="java.lang.String">
+			<column name="short_message" />
+		</property>
+
+		<property name="message_type" type="java.lang.String">
+			<column name="message_type" />
+		</property>
+
+		<property name="send_time" type="java.sql.Timestamp">
+			<column name="send_time" />
+		</property>
+
+	</class>
+</hibernate-mapping>

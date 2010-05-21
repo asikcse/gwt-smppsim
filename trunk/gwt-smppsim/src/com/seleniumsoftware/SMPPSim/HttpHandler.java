@@ -28,16 +28,31 @@
 
 package com.seleniumsoftware.SMPPSim;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.NoSuchElementException;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.seleniumsoftware.SMPPSim.exceptions.InvalidHexStringlException;
-import com.seleniumsoftware.SMPPSim.pdu.*;
+import com.seleniumsoftware.SMPPSim.pdu.DeliverSM;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 import com.seleniumsoftware.SMPPSim.util.Utilities;
-
-import java.util.logging.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.text.*;
 
 /**
  * Class <code>HttpHandler</code> is a very simple http server which provides
@@ -378,8 +393,7 @@ public class HttpHandler implements Runnable {
 				logger.warning("exception accepting connection");
 			}
 			try {
-				is = new BufferedReader(new InputStreamReader(socket
-						.getInputStream()));
+				is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			} catch (IOException e) {
 				logger.log(Level.WARNING, "Exception: " + e.getMessage(), e);
 				logger.warning("failure getting input stream");
@@ -533,7 +547,7 @@ public class HttpHandler implements Runnable {
 		File requestedFile;
 
 		// Build up the path to the requested file in a
-		// platform independent way. URL’s use ‘/’ in their
+		// platform independent way. URLï¿½s use ï¿½/ï¿½ in their
 		// path, but this platform may not.
 		if (filename.indexOf("..") != -1)
 			return null;
@@ -1184,7 +1198,7 @@ public class HttpHandler implements Runnable {
 		String uri = null;
 
 		try {
-			// request method, typically ‘GET’, but ignored
+			// request method, typically ï¿½GETï¿½, but ignored
 			st.nextToken();
 			// the second token should be the uri
 			uri = st.nextToken();
