@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,15 +46,16 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		}
 	}
 
-	private void truncateMessage() {		
+	private void truncateMessage() {
 		MessageDAO messageDAO = new MessageDAO();
-		messageDAO.deleteAll();		
+		messageDAO.deleteAll();
 	}
 
 	@Override
 	public Map<String, String> getInitialData() {
 		startSMPPSim();
 		Map<String, String> map = new HashMap<String, String>();
+
 		map = getMessageMap();
 		return map;
 	}
@@ -61,34 +64,68 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	public Map<String, String> getInitialData(String handsetNo,
 			String serviceNo, String shortMessage, Timestamp sendTime) {
 		startSMPPSim();
-		
-		log.info("----------" + serviceNo + "\t" + handsetNo + "\t"+ shortMessage + "\t" + sendTime);
+
+		log.info("----------" + serviceNo + "\t" + handsetNo + "\t"
+				+ shortMessage + "\t" + sendTime);
 		insertMessage(handsetNo, serviceNo, shortMessage, sendTime);
 
-		Map<String, String> map = getMessageMap();
+		// Map<String, String> map = getMessageMap();
+		Map<String, String> map = getMessageMap(handsetNo, serviceNo);
 
 		return map;
 	}
 
+	
 	private Map<String, String> getMessageMap() {
 		MessageDAO messageDAO = new MessageDAO();
 
-		Map<String, String> map = new HashMap<String, String>();
+		Map<String, String> map = new TreeMap<String, String>();
 
 		List<Message> listMessage = messageDAO.findAll();
 
 		for (Message message : listMessage) {
-			map.put("handsetNo", message.getSource_addr().toString());
-			map.put("serviceNo", message.getDest_addr().toString());			
-
+			if (!map.containsKey("handsetNo")) {
+				map.put("handsetNo", message.getSource_addr().toString());
+			}
+			if (!map.containsKey("serviceNo")) {
+				map.put("serviceNo", message.getDest_addr().toString());
+			}
 			String key = message.getMessage_type()
 					+ message.getMsgId().toString();
-			String value = "<font face='sans-serif' color='gray'>" + message.getSend_time().toString().replace(".0", "") + "  ["
-					+ message.getSource_addr().toString() + "->"
-					+ message.getDest_addr().toString() + "]" + "</font> <br> <font face='sans-serif'>"
-					+ message.getShort_message()+". </font>";
+			String value = "<font face='sans-serif' color='gray'>"
+					+ message.getSend_time().toString().replace(".0", "")
+					+ "  [" + message.getSource_addr().toString() + "->"
+					+ message.getDest_addr().toString() + "]"
+					+ "</font> <br> <font face='sans-serif'>"
+					+ message.getShort_message() + ". </font>";
 			map.put(key, value);
 		}
+		
+		return map;		
+	}
+
+	private Map<String, String> getMessageMap(String handsetNo, String serviceNo) {
+		MessageDAO messageDAO = new MessageDAO();
+
+		Map<String, String> map = new HashMap<String, String>();
+
+		List<Message> listMessage = messageDAO.findBySrcDestAddress(new Long(
+				handsetNo), new Long(serviceNo));
+
+		map.put("handsetNo", handsetNo);
+		map.put("serviceNo", serviceNo);
+		for (Message message : listMessage) {
+			String key = message.getMessage_type()
+					+ message.getMsgId().toString();
+			String value = "<font face='sans-serif' color='gray'>"
+					+ message.getSend_time().toString().replace(".0", "")
+					+ "  [" + message.getSource_addr().toString() + "->"
+					+ message.getDest_addr().toString() + "]"
+					+ "</font> <br> <font face='sans-serif'>"
+					+ message.getShort_message() + ". </font>";
+			map.put(key, value);
+		}
+
 		return map;
 	}
 

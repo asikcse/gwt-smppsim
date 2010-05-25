@@ -35,6 +35,26 @@ public class MessageDAO extends BaseHibernateDAO {
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<Message> findBySrcDestAddress(Long sourceAddr, Long destAddr) {
+		List<Message> messageList = new ArrayList<Message>();
+		Session session = null;
+		try {
+			log.info("Finding message for Handset number :"
+					+ sourceAddr.toString() + " and Service number :"
+					+ destAddr.toString());
+			session = getSession();
+			String queryString = "from Message where source_addr=? and dest_addr=?";
+			Query queryObject = session.createQuery(queryString);
+			queryObject.setParameter(0, sourceAddr);
+			queryObject.setParameter(1, destAddr);
+			messageList = queryObject.list();
+		} catch (Exception e) {
+			log.error(e);
+		}
+		return messageList;
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<Message> findAll() {
 		List<Message> messageList = new ArrayList<Message>();
 		Session session = null;

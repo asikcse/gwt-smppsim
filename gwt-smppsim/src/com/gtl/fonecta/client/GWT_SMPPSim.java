@@ -9,8 +9,6 @@ import java.util.Map;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
@@ -31,7 +29,6 @@ public class GWT_SMPPSim implements EntryPoint {
 	private DataServiceAsync serviceProxy;
 	Map<String, String> initMap = null;
 
-	
 	VerticalPanel mainVPanel;
 	VerticalPanel leftVPanel;
 	VerticalPanel rightVPanel;
@@ -46,15 +43,21 @@ public class GWT_SMPPSim implements EntryPoint {
 	Grid topGrid;
 	Grid msgGrid;
 
-	String hansetNo;
-	String serviceNo;
+	 String hansetNo;
+	 String serviceNo;
 	String shortMessage;
-	
-	
 
 	GWT_SMPPSim() {
 		// System.out.println("Constructor---");
 		serviceProxy = GWT.create(DataService.class);
+
+		/*try{
+			String hno=getHansetNo();
+			String sno=serviceNo;
+			System.out.println("Constructor---" + hno + " " + sno+"\t"+hansetNo+"\t"+serviceNo+"\t"+this.hansetNo+"\t"+this.serviceNo);
+		}catch(Exception e){
+			e.printStackTrace();
+		}*/
 		serviceProxy.getInitialData(new AsyncCallback<Map<String, String>>() {
 
 			@Override
@@ -69,21 +72,23 @@ public class GWT_SMPPSim implements EntryPoint {
 				setComponetValue();
 			}
 		});
-	}
-	
-	protected void setComponetValue() {
 		
-		for(String key : initMap.keySet()){
-			if(key.contentEquals("handsetNo")){
-				hansetNo=initMap.get(key);
+	}
+
+	protected void setComponetValue() {
+
+		//java.util.NavigableMap<String, String> descMap;
+		for (String key : initMap.keySet()) {
+			if (key.contentEquals("handsetNo")) {
+				hansetNo = initMap.get(key);
 				hansetNum.setText(hansetNo);
-			} else if(key.contentEquals("serviceNo")){
-				serviceNo=initMap.get(key);
+			} else if (key.contentEquals("serviceNo")) {
+				serviceNo = initMap.get(key);
 				serviceNum.setText(serviceNo);
-			} else if(key.contains("MO")){
-				leftVPanel .add(new HTML(initMap.get(key) +"<br>" ));
-			} else if(key.contains("MT")){
-				rightVPanel .add(new HTML(initMap.get(key) +"<br>" ));
+			} else if (key.contains("MO")) {
+				leftVPanel.add(new HTML(initMap.get(key) + "<br>"));
+			} else if (key.contains("MT")) {
+				rightVPanel.add(new HTML(initMap.get(key) + "<br>"));
 			}
 		}
 	}
@@ -92,29 +97,30 @@ public class GWT_SMPPSim implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-				
+
 		mainVPanel = new VerticalPanel();
 		handsetNumLabel = new Label("Handset number :");
 		serviceNumLabel = new Label("Service number :");
 		messageLabel = new Label("Message :");
-						
+
 		hansetNum = new TextBox();
-		hansetNo="4477665544";
+		setHansetNo("4477665544");
+		hansetNo = "4477665544";
 		hansetNum.setText(hansetNo);
-		
+
 		serviceNum = new TextBox();
-		serviceNo="337788665522";
+		serviceNo = "337788665522";
 		serviceNum.setText(serviceNo);
-		
+
 		textMessage = new TextArea();
-		textMessage.setText("Hello from SMPPSim"); 
+		textMessage.setText("Hello from SMPPSim");
 
 		changeButton = new Button("Change");
 		submitButton = new Button("Send Message");
 
-		changeButton.addClickHandler(new ChangeBtnHandler(this));		
+		changeButton.addClickHandler(new ChangeBtnHandler(this));
 		submitButton.addClickHandler(new MessageHandler(this));
-						
+
 		topGrid = new Grid(3, 3);
 
 		topGrid.setCellSpacing(5);
@@ -133,18 +139,25 @@ public class GWT_SMPPSim implements EntryPoint {
 		msgGrid = new Grid(2, 2);
 		msgGrid.setCellSpacing(5);
 
-		msgGrid.setWidget(0, 0, new HTML(
-				"<font face='sans-serif'>Mobile Originated <i>messages</i>  </font>"));
+		msgGrid
+				.setWidget(
+						0,
+						0,
+						new HTML(
+								"<font face='sans-serif'>Mobile Originated <i>messages</i>  </font>"));
 		msgGrid.getWidget(0, 0).setWidth("300px");
-		msgGrid.setWidget(0, 1, new HTML(
-				"<font face='sans-serif'>Mobile Terminated <i>messages</i> </font>"));
+		msgGrid
+				.setWidget(
+						0,
+						1,
+						new HTML(
+								"<font face='sans-serif'>Mobile Terminated <i>messages</i> </font>"));
 		msgGrid.getWidget(0, 1).setWidth("300px");
 		msgGrid.getWidget(0, 1).setStyleName("rightAlign");
 
 		leftVPanel = new VerticalPanel();
 		rightVPanel = new VerticalPanel();
 
-		
 		msgGrid.setWidget(1, 0, leftVPanel);
 
 		msgGrid.setWidget(1, 1, rightVPanel);
@@ -216,7 +229,8 @@ public class GWT_SMPPSim implements EntryPoint {
 	}
 
 	/**
-	 * @param hansetNo the hansetNo to set
+	 * @param hansetNo
+	 *            the hansetNo to set
 	 */
 	public void setHansetNo(String hansetNo) {
 		this.hansetNo = hansetNo;
@@ -230,12 +244,13 @@ public class GWT_SMPPSim implements EntryPoint {
 	}
 
 	/**
-	 * @param serviceNo the serviceNo to set
+	 * @param serviceNo
+	 *            the serviceNo to set
 	 */
 	public void setServiceNo(String serviceNo) {
 		this.serviceNo = serviceNo;
 	}
-	
+
 	/**
 	 * @return the shortMessage
 	 */
@@ -244,12 +259,13 @@ public class GWT_SMPPSim implements EntryPoint {
 	}
 
 	/**
-	 * @param shortMessage the shortMessage to set
+	 * @param shortMessage
+	 *            the shortMessage to set
 	 */
 	public void setShortMessage(String shortMessage) {
 		this.shortMessage = shortMessage;
 	}
-	
+
 	/**
 	 * @return the initMap
 	 */
@@ -258,7 +274,8 @@ public class GWT_SMPPSim implements EntryPoint {
 	}
 
 	/**
-	 * @param initMap the initMap to set
+	 * @param initMap
+	 *            the initMap to set
 	 */
 	public void setInitMap(Map<String, String> initMap) {
 		this.initMap = initMap;
