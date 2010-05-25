@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!--     Mapping file -->
 <hibernate-mapping>
-	<class name="com.gtl.fonecta.client.bean.Message" table="message">
+	<class name="com.gtl.fonecta.client.bean.Message" table="message" >
 
 		<id name="msgId" type="java.lang.Integer" >
 			<column name="msgId" />
