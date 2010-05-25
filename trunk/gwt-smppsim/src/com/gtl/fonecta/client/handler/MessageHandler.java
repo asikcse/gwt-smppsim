@@ -2,7 +2,6 @@ package com.gtl.fonecta.client.handler;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -56,22 +55,18 @@ public class MessageHandler implements ClickHandler {
 		// TODO Store data into derby database and set GWT Component values
 		DataServiceAsync serviceProxy;
 		serviceProxy = GWT.create(DataService.class);
-		serviceProxy.getInitialData(handsetNum.toString(), serviceNum.toString(), shortMessage, timestamp, new AsyncCallback<Map<String, String>>() {
-
+		serviceProxy.insertMessage(handsetNum.toString(), serviceNum.toString(), shortMessage, timestamp, new AsyncCallback<Void>() {
+			
 			@Override
-			public void onFailure(Throwable caught) {
-				//System.out.println("FAIL" + caught.getMessage());				
-				caught.getStackTrace();				
-			}
-
-			@Override
-			public void onSuccess(Map<String, String> result) {
-				//System.out.println("SUCCESS");				
-				/*initMap = result;
-				setComponetValue();*/				
+			public void onSuccess(Void result) {				
 			}
 			
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.getStackTrace();
+			}
 		});
+		
 		
 		
 		/* WORKING well */

@@ -4,11 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NavigableMap;
 import java.util.TreeMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.gtl.fonecta.client.DataService;
@@ -23,7 +19,7 @@ import com.seleniumsoftware.SMPPSim.SMPPSim;
  */
 public class DataServiceImpl extends RemoteServiceServlet implements
 		DataService {
-	private static final Log log = LogFactory.getLog(DataServiceImpl.class);
+	// private static final Log log = LogFactory.getLog(DataServiceImpl.class);
 	private static final long serialVersionUID = 1L;
 	boolean isRunning = false;
 
@@ -60,22 +56,6 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return map;
 	}
 
-	@Override
-	public Map<String, String> getInitialData(String handsetNo,
-			String serviceNo, String shortMessage, Timestamp sendTime) {
-		startSMPPSim();
-
-		log.info("----------" + serviceNo + "\t" + handsetNo + "\t"
-				+ shortMessage + "\t" + sendTime);
-		insertMessage(handsetNo, serviceNo, shortMessage, sendTime);
-
-		// Map<String, String> map = getMessageMap();
-		Map<String, String> map = getMessageMap(handsetNo, serviceNo);
-
-		return map;
-	}
-
-	
 	private Map<String, String> getMessageMap() {
 		MessageDAO messageDAO = new MessageDAO();
 
@@ -100,8 +80,8 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 					+ message.getShort_message() + ". </font>";
 			map.put(key, value);
 		}
-		
-		return map;		
+
+		return map;
 	}
 
 	private Map<String, String> getMessageMap(String handsetNo, String serviceNo) {
@@ -129,7 +109,13 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return map;
 	}
 
-	private void insertMessage(String handsetNo, String serviceNo,
+	@Override
+	public void insertMessage(String handsetNo, String serviceNo,
+			String shortMessage, Timestamp sendTime) {
+		saveMessage(handsetNo, serviceNo, shortMessage, sendTime);
+	}
+
+	private void saveMessage(String handsetNo, String serviceNo,
 			String shortMessage, Timestamp sendTime) {
 		MessageDAO messageDAO = new MessageDAO();
 		Message message = new Message();
