@@ -8,6 +8,5 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface DataServiceAsync {
 	void getInitialData(AsyncCallback<Map<String, String>> asyncCallback);
 
-	void getInitialData(String handsetNo, String serviceNo, String shortMessage,
-			Timestamp sendTime, AsyncCallback<Map<String, String>> callback);
+	void insertMessage(String handsetNo, String serviceNo, String shortMessage, Timestamp sendTime, AsyncCallback<Void> callback);
 }

@@ -10,6 +10,5 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface DataService extends RemoteService {
 	Map<String, String> getInitialData();
 
-	Map<String, String> getInitialData(String handsetNo, String serviceNo,
-			String shortMessage, Timestamp sendTime);
+	void insertMessage(String handsetNo, String serviceNo, String shortMessage,	Timestamp sendTime);
 }
