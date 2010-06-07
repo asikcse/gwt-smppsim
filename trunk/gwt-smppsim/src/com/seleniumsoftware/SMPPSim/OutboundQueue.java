@@ -26,9 +26,13 @@
  ****************************************************************************
 */
 package com.seleniumsoftware.SMPPSim;
+import com.gtl.fonecta.client.bean.Message;
+import com.gtl.fonecta.server.services.MessageService;
+import com.gtl.fonecta.server.services.MessageServiceImpl;
 import com.seleniumsoftware.SMPPSim.exceptions.*;
 import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
 
+import java.sql.Timestamp;
 import java.util.logging.*;
 import java.util.*;
 
@@ -53,6 +57,22 @@ public class OutboundQueue implements Runnable  {
 
 	public synchronized void addMessageState(MessageState message)
 		throws OutboundQueueFullException {
+		/*Start Changes*/
+		System.out.println("\n===== " + message.getPdu().getDestination_addr().toString());		
+		System.out.println("\n===== " + new String(message.getPdu().getShort_message()));
+		Message message2 = new Message();
+		message2.setDest_addr(Long.parseLong(message.getPdu().getDestination_addr().toString().replace("+", "")));
+		message2.setShort_message(new String(message.getPdu().getShort_message()));
+		message2.setSource_addr(new Long(337788665522L));
+		Date date=new Date();
+		Timestamp sendTime = new Timestamp(date.getYear(),date.getMonth(),date.getDate(),date.getHours(),date.getMinutes(),date.getSeconds(),0 );
+		message2.setSend_time(sendTime);
+
+		MessageService messageService = new MessageServiceImpl();
+		messageService.insertMtMessage(message2);
+		
+		//message2.setSend_time();
+		/*End Changes*/
 		logger.finest(
 			"OutboundQueue: adding object to queue<"
 				+ message.toString()
@@ -67,6 +87,7 @@ public class OutboundQueue implements Runnable  {
 				SubmitSM p = message.getPdu();
 					// delivery_receipt requested
 					logger.info("Intermediate notification requested");
+					
 					smsc.prepareDeliveryReceipt(p, message.getMessage_id(), message.getState(),1, 1);
 			}
 			notifyAll();

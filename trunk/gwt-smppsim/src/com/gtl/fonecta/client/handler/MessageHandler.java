@@ -50,9 +50,7 @@ public class MessageHandler implements ClickHandler {
 		String shortMessage = gwtSMPPSim.getTextMessage().getText();
 		Date now = new Date();
 		Timestamp timestamp = new Timestamp(now.getTime());
-				
-
-		// TODO Store data into derby database and set GWT Component values
+						
 		DataServiceAsync serviceProxy;
 		serviceProxy = GWT.create(DataService.class);
 		serviceProxy.insertMessage(handsetNum.toString(), serviceNum.toString(), shortMessage, timestamp, new AsyncCallback<Void>() {
