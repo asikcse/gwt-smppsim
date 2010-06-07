@@ -11,21 +11,32 @@ import org.hibernate.Transaction;
 
 import com.gtl.fonecta.client.bean.Message;
 
+/**
+ * DAO class for Message
+ * 
+ * @author devang
+ * 
+ */
 public class MessageDAO extends BaseHibernateDAO {
 	private static final Log log = LogFactory.getLog(MessageDAO.class);
 
+	/**
+	 * Method to save the message
+	 * 
+	 * @param message
+	 */
 	public void save(Message message) {
-		Integer messageId=null;
+		Integer messageId = null;
 
 		Session session = null;
 		Transaction transaction = null;
 		try {
 			session = getSession();
-			transaction = session.beginTransaction();		
+			transaction = session.beginTransaction();
 			messageId = (Integer) session.save(message);
 			message.setMsgId(messageId);
 			transaction.commit();
-			log.info("inserted 1 message of type "+message.getMessage_type());
+			log.info("inserted 1 message of type " + message.getMessage_type());
 		} catch (Exception e) {
 			log.error(e);
 			log.error(e);
@@ -37,6 +48,13 @@ public class MessageDAO extends BaseHibernateDAO {
 		}
 	}
 
+	/**
+	 * Method to find list of message having DourceAddress and  DestinationAddress
+	 * 
+	 * @param sourceAddr
+	 * @param destAddr
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Message> findBySrcDestAddress(Long sourceAddr, Long destAddr) {
 		List<Message> messageList = new ArrayList<Message>();
@@ -57,6 +75,11 @@ public class MessageDAO extends BaseHibernateDAO {
 		return messageList;
 	}
 
+	/**
+	 * Method to find all message and return list of message
+	 * 
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Message> findAll() {
 		List<Message> messageList = new ArrayList<Message>();
@@ -78,6 +101,12 @@ public class MessageDAO extends BaseHibernateDAO {
 		return messageList;
 	}
 
+	/**
+	 * Method to find message using message id.
+	 * 
+	 * @param msgId
+	 * @return
+	 */
 	public Message findById(int msgId) {
 		Message message = null;
 		Session session = null;
@@ -94,6 +123,11 @@ public class MessageDAO extends BaseHibernateDAO {
 		return message;
 	}
 
+	/**
+	 * Method to delete specific message.
+	 * 
+	 * @param persistentInstance
+	 */
 	public void delete(Message persistentInstance) {
 		Session session = null;
 		Transaction transaction = null;
@@ -114,6 +148,11 @@ public class MessageDAO extends BaseHibernateDAO {
 		}
 	}
 
+	/**
+	 * Method to delete specific message having message ID as id.
+	 * 
+	 * @param id
+	 */
 	public void deleteById(int id) {
 		Session session = null;
 		Transaction transaction = null;
@@ -136,6 +175,10 @@ public class MessageDAO extends BaseHibernateDAO {
 		}
 	}
 
+	/**
+	 * Method to delete all messages.
+	 * 
+	 */
 	public void deleteAll() {
 		Session session = null;
 		Transaction transaction = null;

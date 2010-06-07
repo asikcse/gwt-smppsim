@@ -26,14 +26,19 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim;
-import java.io.*;
-import java.net.*;
-import java.util.logging.*;
 
-import com.seleniumsoftware.SMPPSim.util.LoggingUtilities;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.logging.Logger;
 
 public class StandardConnectionHandler implements Runnable {
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 	private Smsc smsc = Smsc.getInstance();
 	private StandardProtocolHandler handler;
 	boolean isConnected = false;
@@ -47,7 +52,8 @@ public class StandardConnectionHandler implements Runnable {
 	Socket socket = null;
 
 	public StandardConnectionHandler() {
-		// default constructor only included so that configurable StandardConnectionHandler selection is possible
+		// default constructor only included so that configurable
+		// StandardConnectionHandler selection is possible
 	}
 
 	public StandardConnectionHandler(ServerSocket useThisServerSocket) {
@@ -61,56 +67,55 @@ public class StandardConnectionHandler implements Runnable {
 	private void runThread() {
 
 		do // process connections forever
+		{
+			do // {accept connection, create protocol handler, {read PDU,handle
+				// it}, close connection}
 			{
-			do // {accept connection, create protocol handler, {read PDU,handle it}, close connection}
-				{
 				try {
-					logger.info(
-						"StandardConnectionHandler waiting for connection");
+					logger
+							.info("StandardConnectionHandler waiting for connection");
 					socket = ss.accept();
-					logger.info(
-						"StandardConnectionHandler accepted a connection");
+					logger
+							.info("StandardConnectionHandler accepted a connection");
 					isConnected = true;
 					is = socket.getInputStream();
 					os = socket.getOutputStream();
-					Class c =
-						Class.forName(SMPPSim.getProtocolHandlerClassName());
+					Class c = Class.forName(SMPPSim
+							.getProtocolHandlerClassName());
 					handler = (StandardProtocolHandler) c.newInstance();
 					handler.setConnection(this);
-					logger.info(
-						"Protocol handler is of type " + handler.getName());
+					logger.info("Protocol handler is of type "
+							+ handler.getName());
 				} catch (Exception exception) {
-					logger.warning(
-						"Exception processing connection: "
+					logger.warning("Exception processing connection: "
 							+ exception.getMessage());
-					logger.warning(
-						"Exception is of type: "
+					logger.warning("Exception is of type: "
 							+ exception.getClass().getName());
 					exception.printStackTrace();
 					try {
 						socket.close();
 					} catch (Exception e) {
-						logger.warning(
-							"Could not close socket following exception");
+						logger
+								.warning("Could not close socket following exception");
 						e.printStackTrace();
 					}
 				}
 			} while (!isConnected);
 
 			do // until UNBIND or state violation
-				{
+			{
 				try {
 					logger.finest("at start of main loop");
 					readPacketInto(is);
 					smsc.writeBinarySme(message);
-					if(SMPPSim.isCallback() && smsc.isCallback_server_online()) {
-					   smsc.sent(response);
-					} 
+					if (SMPPSim.isCallback() && smsc.isCallback_server_online()) {
+						smsc.sent(response);
+					}
 					logger.finest("read packet");
 					handler.processMessage(message);
 				} catch (SocketException se) {
-					logger.info(
-						"Socket exception: probably connection closed by client without UNBIND");
+					logger
+							.info("Socket exception: probably connection closed by client without UNBIND");
 					se.printStackTrace();
 					handler.getSession().setBound(false);
 					if (handler.getSession().isReceiver())
@@ -122,8 +127,8 @@ public class StandardConnectionHandler implements Runnable {
 					try {
 						socket.close();
 					} catch (Exception e) {
-						logger.warning(
-							"Could not close socket following exception");
+						logger
+								.warning("Could not close socket following exception");
 						e.printStackTrace();
 					}
 					handler.getSession().setBound(false);
@@ -131,12 +136,12 @@ public class StandardConnectionHandler implements Runnable {
 				}
 			} while (isConnected);
 			logger.finest("leaving connection handler main loop");
-		}
-		while (true);
+		} while (true);
 	}
 
 	protected boolean isBound() {
-		// we only have a ProtocolHandler if this StandardConnectionHandler is connected
+		// we only have a ProtocolHandler if this StandardConnectionHandler is
+		// connected
 		if (isConnected) {
 			return handler.getSession().isBound();
 		} else {
@@ -148,7 +153,8 @@ public class StandardConnectionHandler implements Runnable {
 		return handler.getSession().isReceiver();
 	}
 
-//TODO Review why addressIsServicedByReceiver is in the StandardConnectionHandler class?!
+	// TODO Review why addressIsServicedByReceiver is in the
+	// StandardConnectionHandler class?!
 	protected boolean addressIsServicedByReceiver(String address) {
 		if (isConnected) {
 			return handler.addressIsServicedByReceiver(address);
@@ -173,9 +179,8 @@ public class StandardConnectionHandler implements Runnable {
 		packetLen[3] = (byte) is.read();
 		logger.finest("Got cmd_len");
 
-		//put that into the packet header
-		len =
-			(getBytesAsInt(packetLen[0]) << 24)
+		// put that into the packet header
+		len = (getBytesAsInt(packetLen[0]) << 24)
 				| (getBytesAsInt(packetLen[1]) << 16)
 				| (getBytesAsInt(packetLen[2]) << 8)
 				| (getBytesAsInt(packetLen[3]));
@@ -203,14 +208,14 @@ public class StandardConnectionHandler implements Runnable {
 		os.flush();
 		smsc.writeBinarySmppsim(response);
 	}
-	
-	public void closeConnection()
-		throws IOException {
+
+	public void closeConnection() throws IOException {
 		os.flush();
 		os.close();
 		socket.close();
 		isConnected = false;
 	}
+
 	/**
 	 * @return
 	 */
@@ -231,6 +236,7 @@ public class StandardConnectionHandler implements Runnable {
 	public void setSs(ServerSocket socket) {
 		ss = socket;
 	}
+
 	/**
 	 * @return
 	 */

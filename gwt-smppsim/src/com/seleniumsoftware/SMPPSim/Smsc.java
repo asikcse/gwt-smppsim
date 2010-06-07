@@ -27,20 +27,34 @@
 
 package com.seleniumsoftware.SMPPSim;
 
-import com.seleniumsoftware.SMPPSim.exceptions.*;
-import com.seleniumsoftware.SMPPSim.pdu.*;
-import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
-import com.seleniumsoftware.SMPPSim.util.*;
-
-import java.util.*;
-import java.text.*;
-import java.util.logging.*;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.OutputStream;
-import java.net.*;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Logger;
+
+import com.seleniumsoftware.SMPPSim.exceptions.InboundQueueFullException;
+import com.seleniumsoftware.SMPPSim.exceptions.InternalException;
+import com.seleniumsoftware.SMPPSim.exceptions.MessageStateNotFoundException;
+import com.seleniumsoftware.SMPPSim.pdu.CancelSM;
+import com.seleniumsoftware.SMPPSim.pdu.CancelSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.DataSM;
+import com.seleniumsoftware.SMPPSim.pdu.DeliverSM;
+import com.seleniumsoftware.SMPPSim.pdu.DeliveryReceipt;
+import com.seleniumsoftware.SMPPSim.pdu.Outbind;
+import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
+import com.seleniumsoftware.SMPPSim.pdu.QuerySM;
+import com.seleniumsoftware.SMPPSim.pdu.QuerySMResp;
+import com.seleniumsoftware.SMPPSim.pdu.ReplaceSM;
+import com.seleniumsoftware.SMPPSim.pdu.ReplaceSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
+import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
+import com.seleniumsoftware.SMPPSim.util.LoggingUtilities;
 
 public class Smsc {
 
@@ -52,7 +66,8 @@ public class Smsc {
 
 	private static boolean callback_server_online = false;
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	private static long message_id = 0;
 
@@ -173,15 +188,15 @@ public class Smsc {
 	private long dataSmOK = 0;
 
 	private long dataSmERR = 0;
-	
+
 	private long outbindOK = 0;
-	
+
 	private long outbindERR = 0;
-	
+
 	// outbind
-	
+
 	boolean outbind_sent = false;
-	
+
 	private Smsc() {
 	}
 
@@ -196,7 +211,7 @@ public class Smsc {
 		startTime = new Date();
 		SimpleDateFormat df = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
 		startTimeString = df.format(startTime);
-		
+
 		message_id = SMPPSim.getStart_at();
 
 		if (SMPPSim.isCallback()) {
@@ -290,7 +305,7 @@ public class Smsc {
 		// LifeCycleService (OutboundQueue) must always be running
 		lifecycleService = new Thread(oq);
 		lifecycleService.start();
-		
+
 		if (SMPPSim.getDelayReceiptsBy() > 0) {
 			logger.info("Starting delivery receipts delay service....");
 			drq = DelayedDrQueue.getInstance();
@@ -300,24 +315,24 @@ public class Smsc {
 	}
 
 	public boolean authenticate(String systemid, String password) {
-		
-		for (int i=0;i<SMPPSim.getSystemids().length;i++) {
+
+		for (int i = 0; i < SMPPSim.getSystemids().length; i++) {
 			if (SMPPSim.getSystemids()[i].equals(systemid))
 				if (SMPPSim.getPasswords()[i].equals(password))
 					return true;
 				else
 					return false;
 		}
-		return false;		
+		return false;
 	}
 
 	public boolean isValidSystemId(String systemid) {
-		
-		for (int i=0;i<SMPPSim.getSystemids().length;i++) {
+
+		for (int i = 0; i < SMPPSim.getSystemids().length; i++) {
 			if (SMPPSim.getSystemids()[i].equals(systemid))
 				return true;
 		}
-		return false;		
+		return false;
 	}
 
 	public void connectToCallbackServer(Object mutex) {
@@ -328,7 +343,7 @@ public class Smsc {
 
 	public synchronized static String getMessageID() {
 		long msgID = message_id++;
-		String msgIDstr = SMPPSim.getMid_prefix()+Long.toString(msgID);
+		String msgIDstr = SMPPSim.getMid_prefix() + Long.toString(msgID);
 		return msgIDstr;
 	}
 
@@ -510,7 +525,8 @@ public class Smsc {
 		iq.addMessage(newMessage);
 	}
 
-	public void doEsmeToEsmeDelivery(SubmitSM smppmsg) throws InboundQueueFullException {
+	public void doEsmeToEsmeDelivery(SubmitSM smppmsg)
+			throws InboundQueueFullException {
 		DeliverSM newMessage = new DeliverSM();
 		newMessage.esmeToEsmeDerivation(smppmsg);
 		iq.addMessage(newMessage);
@@ -518,11 +534,14 @@ public class Smsc {
 
 	public void outbind() {
 		try {
-			Socket s = new Socket(SMPPSim.getEsme_ip_address(),SMPPSim.getEsme_port());
+			Socket s = new Socket(SMPPSim.getEsme_ip_address(), SMPPSim
+					.getEsme_port());
 			OutputStream out = s.getOutputStream();
-			Outbind outbind = new Outbind(SMPPSim.getEsme_systemid(),SMPPSim.getEsme_password());
-			byte [] outbind_bytes = outbind.marshall();
-			LoggingUtilities.hexDump(": OUTBIND:", outbind_bytes, outbind_bytes.length);
+			Outbind outbind = new Outbind(SMPPSim.getEsme_systemid(), SMPPSim
+					.getEsme_password());
+			byte[] outbind_bytes = outbind.marshall();
+			LoggingUtilities.hexDump(": OUTBIND:", outbind_bytes,
+					outbind_bytes.length);
 			if (Smsc.isDecodePdus())
 				LoggingUtilities.logDecodedPdu(outbind);
 			out.write(outbind_bytes);
@@ -532,16 +551,19 @@ public class Smsc {
 			outbindOK++;
 			outbind_sent = true;
 		} catch (Exception e) {
-			logger.warning("Attempted outbind failed. Check IP address and port are correct for outbind. Exception of type "+e.getClass().getName());
+			logger
+					.warning("Attempted outbind failed. Check IP address and port are correct for outbind. Exception of type "
+							+ e.getClass().getName());
 			outbindERR++;
 		}
 	}
-	
-	public void prepareDeliveryReceipt(SubmitSM smppmsg, String messageID,	byte state, int sub, int dlvrd) {
-		int esm_class=4;
+
+	public void prepareDeliveryReceipt(SubmitSM smppmsg, String messageID,
+			byte state, int sub, int dlvrd) {
+		int esm_class = 4;
 		if (state == PduConstants.ENROUTE)
 			esm_class = 32;
-		DeliveryReceipt receipt = new DeliveryReceipt(smppmsg,esm_class);
+		DeliveryReceipt receipt = new DeliveryReceipt(smppmsg, esm_class);
 		Date rightNow = new Date();
 		SimpleDateFormat df = new SimpleDateFormat("yyMMddHHmm");
 		String dateAsString = df.format(rightNow);
@@ -557,11 +579,10 @@ public class Smsc {
 		logger.finest("sm_len=" + smppmsg.getSm_length() + ",message="
 				+ smppmsg.getShort_message());
 		if (smppmsg.getSm_length() > 19)
-			receipt.setText(new String(smppmsg.getShort_message(),0, 20));
-		else
-			if (smppmsg.getSm_length() > 0)
-				receipt.setText(new String(smppmsg.getShort_message(),0,
-						smppmsg.getSm_length()));
+			receipt.setText(new String(smppmsg.getShort_message(), 0, 20));
+		else if (smppmsg.getSm_length() > 0)
+			receipt.setText(new String(smppmsg.getShort_message(), 0, smppmsg
+					.getSm_length()));
 		receipt.setDeliveryReceiptMessage(state);
 		try {
 			if (SMPPSim.getDelayReceiptsBy() <= 0) {

@@ -26,13 +26,16 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim;
-import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
+
+import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
 
 public class LifeCycleManager {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 	private Smsc smsc = Smsc.getInstance();
 	private double transitionThreshold;
 	private double deliveredThreshold;
@@ -47,39 +50,39 @@ public class LifeCycleManager {
 
 	public LifeCycleManager() {
 		double a = (double) SMPPSim.getPercentageThatTransition() + 1.0;
-		transitionThreshold =  (a / 100);
-		logger.finest("transitionThreshold="+transitionThreshold);
-		logger.finest("SMPPSim.getPercentageThatTransition()="+SMPPSim.getPercentageThatTransition());
+		transitionThreshold = (a / 100);
+		logger.finest("transitionThreshold=" + transitionThreshold);
+		logger.finest("SMPPSim.getPercentageThatTransition()="
+				+ SMPPSim.getPercentageThatTransition());
 		maxTimeEnroute = SMPPSim.getMaxTimeEnroute();
-		logger.finest("maxTimeEnroute="+maxTimeEnroute);
+		logger.finest("maxTimeEnroute=" + maxTimeEnroute);
 		discardThreshold = SMPPSim.getDiscardFromQueueAfter();
-		logger.finest("discardThreshold="+discardThreshold);
+		logger.finest("discardThreshold=" + discardThreshold);
 		deliveredThreshold = ((double) SMPPSim.getPercentageDelivered() / 100);
-		logger.finest("deliveredThreshold="+deliveredThreshold);
+		logger.finest("deliveredThreshold=" + deliveredThreshold);
 		// .90
-		undeliverableThreshold =
-			deliveredThreshold + ((double) SMPPSim.getPercentageUndeliverable() / 100);
-		logger.finest("undeliverableThreshold="+undeliverableThreshold);
+		undeliverableThreshold = deliveredThreshold
+				+ ((double) SMPPSim.getPercentageUndeliverable() / 100);
+		logger.finest("undeliverableThreshold=" + undeliverableThreshold);
 		// .90 + .06 = .96
-		acceptedThreshold =
-			undeliverableThreshold + ((double) SMPPSim.getPercentageAccepted() / 100);
-		logger.finest("acceptedThreshold="+acceptedThreshold);
+		acceptedThreshold = undeliverableThreshold
+				+ ((double) SMPPSim.getPercentageAccepted() / 100);
+		logger.finest("acceptedThreshold=" + acceptedThreshold);
 		// .96 + .02 = .98
-		rejectedThreshold =
-			acceptedThreshold + ((double) SMPPSim.getPercentageRejected() / 100);
-		logger.finest("rejectedThreshold="+rejectedThreshold);
+		rejectedThreshold = acceptedThreshold
+				+ ((double) SMPPSim.getPercentageRejected() / 100);
+		logger.finest("rejectedThreshold=" + rejectedThreshold);
 		// .98 + .02 = 1.00
 	}
-	
+
 	public MessageState setState(MessageState m) {
 		// Should a transition take place at all?
 		if (isTerminalState(m.getState()))
-			return m;	
+			return m;
 		byte currentState = m.getState();
 		transition = Math.random();
 		if ((transition < transitionThreshold)
-			|| ((System.currentTimeMillis() - m.getSubmit_time())
-				> maxTimeEnroute)) {
+				|| ((System.currentTimeMillis() - m.getSubmit_time()) > maxTimeEnroute)) {
 			// so which transition should it be?
 			stateChoice = Math.random();
 			if (stateChoice < deliveredThreshold) {
@@ -94,7 +97,7 @@ public class LifeCycleManager {
 			} else {
 				m.setState(PduConstants.REJECTED);
 				logger.finest("State set to REJECTED");
-			}			
+			}
 		}
 		if (isTerminalState(m.getState())) {
 			m.setFinal_time(System.currentTimeMillis());
@@ -104,7 +107,8 @@ public class LifeCycleManager {
 			if (dr && currentState != m.getState()) {
 				// delivery_receipt requested
 				logger.info("Delivery Receipt requested");
-				smsc.prepareDeliveryReceipt(p, m.getMessage_id(), m.getState(),1, 1);
+				smsc.prepareDeliveryReceipt(p, m.getMessage_id(), m.getState(),
+						1, 1);
 			}
 		}
 
@@ -113,11 +117,11 @@ public class LifeCycleManager {
 
 	public boolean isTerminalState(byte state) {
 		if ((state == PduConstants.DELIVERED)
-			|| (state == PduConstants.EXPIRED)
-			|| (state == PduConstants.DELETED)
-			|| (state == PduConstants.UNDELIVERABLE)
-			|| (state == PduConstants.ACCEPTED)
-			|| (state == PduConstants.REJECTED))
+				|| (state == PduConstants.EXPIRED)
+				|| (state == PduConstants.DELETED)
+				|| (state == PduConstants.UNDELIVERABLE)
+				|| (state == PduConstants.ACCEPTED)
+				|| (state == PduConstants.REJECTED))
 			return true;
 		else
 			return false;
@@ -127,7 +131,7 @@ public class LifeCycleManager {
 		long now = System.currentTimeMillis();
 		long age = now - m.getSubmit_time();
 		if (isTerminalState(m.getState())) {
-			if (age	> discardThreshold)
+			if (age > discardThreshold)
 				return true;
 		}
 		return false;

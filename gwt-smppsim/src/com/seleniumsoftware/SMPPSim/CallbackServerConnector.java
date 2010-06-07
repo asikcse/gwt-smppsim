@@ -27,15 +27,15 @@
 
 package com.seleniumsoftware.SMPPSim;
 
-import java.io.OutputStream;
-import java.net.*;
-import java.util.logging.*;
+import java.net.Socket;
+import java.util.logging.Logger;
 
 public class CallbackServerConnector implements Runnable {
 
 	private static Smsc smsc = Smsc.getInstance();
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	private Object mutex;
 

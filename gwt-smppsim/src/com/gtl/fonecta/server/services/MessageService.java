@@ -13,11 +13,11 @@ public interface MessageService {
 	public void insertMoMessage(Message message);
 
 	public void insertMtMessage(Message message);
-	
+
 	public void deleteAllMessage();
-	
+
 	public List<Message> findAll();
-	
+
 	public List<Message> findBySrcDestAddress(Long sourceAddr, Long destAddr);
-	
+
 }

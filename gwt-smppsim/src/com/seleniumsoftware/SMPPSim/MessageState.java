@@ -105,11 +105,11 @@ public class MessageState {
 	}
 
 	public boolean equals(Object other) {
-//		logger.info("MessageState.equals:"+other.getClass().getName());
+		// logger.info("MessageState.equals:"+other.getClass().getName());
 		if (other instanceof MessageState) {
 			MessageState ms = (MessageState) other;
-//			logger.info("MessageState equality1:" + this.keyToString());
-//			logger.info("MessageState equality2:" + ms.keyToString());
+			// logger.info("MessageState equality1:" + this.keyToString());
+			// logger.info("MessageState equality2:" + ms.keyToString());
 			if (ms.getMessage_id().equals(message_id)
 					&& ms.getSource_addr_ton() == source_addr_ton
 					&& ms.getSource_addr_npi() == source_addr_npi

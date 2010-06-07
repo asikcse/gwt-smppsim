@@ -1,12 +1,12 @@
 package com.seleniumsoftware.examples;
 
-import java.net.ServerSocket;
 import java.util.logging.Logger;
 
 public class CallbackReceiver implements CallbackReceivable {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.examples");
-	
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.examples");
+
 	public void sent(byte[] pdu) {
 		hexDump("SMPPSim sent to ESME:", pdu, pdu.length);
 		if (pduIsDeliverSm(pdu)) {
@@ -91,5 +91,4 @@ public class CallbackReceiver implements CallbackReceivable {
 		logger.info("====================================");
 	}
 
-	
 }

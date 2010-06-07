@@ -22,8 +22,11 @@ import com.gtl.fonecta.client.handler.ChangeBtnHandler;
 import com.gtl.fonecta.client.handler.MessageHandler;
 
 /**
- * Entry point classes define <code>onModuleLoad()</code>.
+ * class <code>GWT_SMPPSim</code> is gwt GUI.
+ * 
+ * @author devang
  */
+
 public class GWT_SMPPSim implements EntryPoint {
 
 	private DataServiceAsync serviceProxy;
@@ -43,14 +46,14 @@ public class GWT_SMPPSim implements EntryPoint {
 	Grid topGrid;
 	Grid msgGrid;
 
-	 String hansetNo;
-	 String serviceNo;
+	String hansetNo;
+	String serviceNo;
 	String shortMessage;
 
 	GWT_SMPPSim() {
 		// System.out.println("Constructor---");
 		serviceProxy = GWT.create(DataService.class);
-		
+
 		serviceProxy.getInitialData(new AsyncCallback<Map<String, String>>() {
 
 			@Override
@@ -65,12 +68,12 @@ public class GWT_SMPPSim implements EntryPoint {
 				setComponetValue();
 			}
 		});
-		
 	}
 
+	/**
+	 * this method should set the component's values
+	 */
 	protected void setComponetValue() {
-
-		//java.util.NavigableMap<String, String> descMap;
 		for (String key : initMap.keySet()) {
 			if (key.contentEquals("handsetNo")) {
 				hansetNo = initMap.get(key);
@@ -131,10 +134,9 @@ public class GWT_SMPPSim implements EntryPoint {
 
 		msgGrid = new Grid(2, 2);
 		msgGrid.setCellSpacing(10);
-		
+
 		msgGrid.setWidget(0,0,new HTML("<font face='sans-serif'>Mobile Originated <i>messages</i>  </font>"));
 		msgGrid.getWidget(0, 0).setWidth("350px");
-		
 		msgGrid.setWidget(0,1,new HTML("<font face='sans-serif'>Mobile Terminated <i>messages</i> </font>"));
 		msgGrid.getWidget(0, 1).setWidth("350px");
 		msgGrid.getWidget(0, 1).setStyleName("rightAlign");
@@ -152,12 +154,10 @@ public class GWT_SMPPSim implements EntryPoint {
 		mainVPanel.add(topGrid);
 		mainVPanel.add(msgGrid);
 		mainVPanel.setSpacing(5);
-		// mainVPanel.setBorderWidth(1);
 
 		mainVPanel.setStyleName("table-center");
 
 		RootPanel.get().add(mainVPanel);
-
 	}
 
 	/**
@@ -264,5 +264,4 @@ public class GWT_SMPPSim implements EntryPoint {
 	public void setInitMap(Map<String, String> initMap) {
 		this.initMap = initMap;
 	}
-
 }

@@ -393,7 +393,8 @@ public class HttpHandler implements Runnable {
 				logger.warning("exception accepting connection");
 			}
 			try {
-				is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				is = new BufferedReader(new InputStreamReader(socket
+						.getInputStream()));
 			} catch (IOException e) {
 				logger.log(Level.WARNING, "Exception: " + e.getMessage(), e);
 				logger.warning("failure getting input stream");
@@ -471,7 +472,7 @@ public class HttpHandler implements Runnable {
 			controlPanelMessage = "";
 			return injectMo(target);
 		}
-		
+
 		if (command.equalsIgnoreCase("stats")) {
 			controlPanelMessage = "";
 			return stats();
@@ -839,21 +840,22 @@ public class HttpHandler implements Runnable {
 
 	private byte[] stats() {
 
-			ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-			try {
-				byte[] headerBytes = createHeaderBytes("HTTP/1.0 200 OK", -1, null);
-				bOut.write(headerBytes);
-				byte[] buf = new byte[2048];
-				String response = "submittedok="+smsc.getSubmitSmOK()+",deliveredok="+smsc.getDeliverSmOK();
-				bOut.write(response.getBytes());
-				bOut.flush();
-				bOut.close();
-				return bOut.toByteArray();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				return null;
-			}
+		ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+		try {
+			byte[] headerBytes = createHeaderBytes("HTTP/1.0 200 OK", -1, null);
+			bOut.write(headerBytes);
+			byte[] buf = new byte[2048];
+			String response = "submittedok=" + smsc.getSubmitSmOK()
+					+ ",deliveredok=" + smsc.getDeliverSmOK();
+			bOut.write(response.getBytes());
+			bOut.flush();
+			bOut.close();
+			return bOut.toByteArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 
 	}
 
@@ -877,7 +879,7 @@ public class HttpHandler implements Runnable {
 		StringTokenizer st = new StringTokenizer(tmpMessage, " &\t\n", false);
 		while (st.hasMoreTokens()) {
 			token = st.nextToken();
-//			logger.info(token);
+			// logger.info(token);
 			StringTokenizer st2 = new StringTokenizer(token, "=", false);
 			while (st2.hasMoreTokens()) {
 				key = st2.nextToken();

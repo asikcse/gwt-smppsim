@@ -25,15 +25,16 @@
  * $Header: /var/cvsroot/SMPPSim2/src/java/com/seleniumsoftware/SMPPSim/util/LoggingUtilities.java,v 1.4 2007/12/06 16:21:39 martin Exp $
  ****************************************************************************/
 package com.seleniumsoftware.SMPPSim.util;
-import com.seleniumsoftware.SMPPSim.pdu.*;
 
 import java.util.StringTokenizer;
-import java.util.logging.*;
+import java.util.logging.Logger;
 
+import com.seleniumsoftware.SMPPSim.pdu.Pdu;
 
 public class LoggingUtilities {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	public static void hexDump(String title, byte[] m, int l) {
 		int p = 0;
@@ -60,14 +61,14 @@ public class LoggingUtilities {
 
 	public static void logDecodedPdu(Pdu p) {
 		// Split into max 80 character lines around comma delimited boundaries
-		int i=0;
+		int i = 0;
 		String pdustring = p.toString();
-		StringBuffer line=new StringBuffer();
-		String token="";
-		StringTokenizer st = new StringTokenizer(pdustring,",");
+		StringBuffer line = new StringBuffer();
+		String token = "";
+		StringTokenizer st = new StringTokenizer(pdustring, ",");
 		while (st.hasMoreElements()) {
 			token = st.nextToken();
-			if ((line.length() + token.length())<79) {
+			if ((line.length() + token.length()) < 79) {
 				if (i > 0) {
 					line.append(",");
 				}
@@ -78,10 +79,10 @@ public class LoggingUtilities {
 				line = new StringBuffer();
 				line.append(token);
 				i = 1;
-			}			
+			}
 		}
 		if (line.length() > 0)
-			logger.info(line.toString());			
+			logger.info(line.toString());
 	}
 
 }

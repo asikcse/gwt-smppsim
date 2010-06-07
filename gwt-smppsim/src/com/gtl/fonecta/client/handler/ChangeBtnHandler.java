@@ -10,7 +10,6 @@ import com.gtl.fonecta.client.GWT_SMPPSim;
  */
 public class ChangeBtnHandler implements ClickHandler {
 
-	//private static final Log log = LogFactory.getLog(ChangeBtnHandler.class);
 	GWT_SMPPSim gwtSMPPSim;
 
 	/**

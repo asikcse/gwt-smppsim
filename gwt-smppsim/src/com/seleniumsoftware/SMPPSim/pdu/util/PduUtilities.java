@@ -53,7 +53,9 @@ public class PduUtilities {
 	 */
 	private static String[] encodings = { "default", "ASCII", null, // binary
 			"ISO8859_1", null, // binary
-			"EUC_JP", "ISO8859_5", "ISO8859_8", "UTF-16BE", null, // pictograms not supported
+			"EUC_JP", "ISO8859_5", "ISO8859_8", "UTF-16BE", null, // pictograms
+																	// not
+																	// supported
 			"ISO2022JP", null, // reserved
 			null, // reserved
 			"EUC_JP", "EUC_KR" };
