@@ -14,15 +14,18 @@ import com.gtl.fonecta.client.bean.Message;
 public class MessageDAO extends BaseHibernateDAO {
 	private static final Log log = LogFactory.getLog(MessageDAO.class);
 
-	public void save(Message transientInstance) {
+	public void save(Message message) {
+		Integer messageId=null;
+
 		Session session = null;
 		Transaction transaction = null;
 		try {
 			session = getSession();
-			transaction = session.beginTransaction();
-			session.save(transientInstance);
+			transaction = session.beginTransaction();		
+			messageId = (Integer) session.save(message);
+			message.setMsgId(messageId);
 			transaction.commit();
-			log.info("inserted 1 message");
+			log.info("inserted 1 message of type "+message.getMessage_type());
 		} catch (Exception e) {
 			log.error(e);
 			log.error(e);
@@ -61,7 +64,7 @@ public class MessageDAO extends BaseHibernateDAO {
 		try {
 			log.info("Finding all messages");
 			session = getSession();
-			String queryString = "from Message";
+			String queryString = "from Message order by message_type";
 			Query queryObject = session.createQuery(queryString);
 			messageList = queryObject.list();
 		} catch (Exception e) {

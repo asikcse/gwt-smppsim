@@ -50,14 +50,7 @@ public class GWT_SMPPSim implements EntryPoint {
 	GWT_SMPPSim() {
 		// System.out.println("Constructor---");
 		serviceProxy = GWT.create(DataService.class);
-
-		/*try{
-			String hno=getHansetNo();
-			String sno=serviceNo;
-			System.out.println("Constructor---" + hno + " " + sno+"\t"+hansetNo+"\t"+serviceNo+"\t"+this.hansetNo+"\t"+this.serviceNo);
-		}catch(Exception e){
-			e.printStackTrace();
-		}*/
+		
 		serviceProxy.getInitialData(new AsyncCallback<Map<String, String>>() {
 
 			@Override
@@ -137,22 +130,13 @@ public class GWT_SMPPSim implements EntryPoint {
 		topGrid.setWidget(2, 2, new HTML());
 
 		msgGrid = new Grid(2, 2);
-		msgGrid.setCellSpacing(5);
-
-		msgGrid
-				.setWidget(
-						0,
-						0,
-						new HTML(
-								"<font face='sans-serif'>Mobile Originated <i>messages</i>  </font>"));
-		msgGrid.getWidget(0, 0).setWidth("300px");
-		msgGrid
-				.setWidget(
-						0,
-						1,
-						new HTML(
-								"<font face='sans-serif'>Mobile Terminated <i>messages</i> </font>"));
-		msgGrid.getWidget(0, 1).setWidth("300px");
+		msgGrid.setCellSpacing(10);
+		
+		msgGrid.setWidget(0,0,new HTML("<font face='sans-serif'>Mobile Originated <i>messages</i>  </font>"));
+		msgGrid.getWidget(0, 0).setWidth("350px");
+		
+		msgGrid.setWidget(0,1,new HTML("<font face='sans-serif'>Mobile Terminated <i>messages</i> </font>"));
+		msgGrid.getWidget(0, 1).setWidth("350px");
 		msgGrid.getWidget(0, 1).setStyleName("rightAlign");
 
 		leftVPanel = new VerticalPanel();

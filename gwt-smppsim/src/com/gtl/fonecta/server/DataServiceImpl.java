@@ -9,7 +9,8 @@ import java.util.TreeMap;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.gtl.fonecta.client.DataService;
 import com.gtl.fonecta.client.bean.Message;
-import com.gtl.fonecta.server.dao.MessageDAO;
+import com.gtl.fonecta.server.services.MessageService;
+import com.gtl.fonecta.server.services.MessageServiceImpl;
 import com.seleniumsoftware.SMPPSim.SMPPSim;
 
 /**
@@ -43,8 +44,8 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	}
 
 	private void truncateMessage() {
-		MessageDAO messageDAO = new MessageDAO();
-		messageDAO.deleteAll();
+		MessageService messageService = new MessageServiceImpl();
+		messageService.deleteAllMessage();
 	}
 
 	@Override
@@ -57,24 +58,26 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	}
 
 	private Map<String, String> getMessageMap() {
-		MessageDAO messageDAO = new MessageDAO();
 
+		MessageService messageService = new MessageServiceImpl();
 		Map<String, String> map = new TreeMap<String, String>();
-
-		List<Message> listMessage = messageDAO.findAll();
+		//map.put("serviceNo","337788665522");
+		
+		List<Message> listMessage = messageService.findAll();
 
 		for (Message message : listMessage) {
 			if (!map.containsKey("handsetNo")) {
 				map.put("handsetNo", message.getSource_addr().toString());
 			}
-			if (!map.containsKey("serviceNo")) {
+			//if (!map.containsKey("serviceNo")) {
+			if (map.containsKey("serviceNo")) {
 				map.put("serviceNo", message.getDest_addr().toString());
 			}
 			String key = message.getMessage_type()
 					+ message.getMsgId().toString();
 			String value = "<font face='sans-serif' color='gray'>"
-					+ message.getSend_time().toString().replace(".0", "")
-					+ "  [" + message.getSource_addr().toString() + "->"
+					+ message.getSend_time().toString().replace(".0", "").replace(" ", "&nbsp;")
+					+ "&nbsp;&nbsp;[" + message.getSource_addr().toString() + "->"
 					+ message.getDest_addr().toString() + "]"
 					+ "</font> <br> <font face='sans-serif'>"
 					+ message.getShort_message() + ". </font>";
@@ -85,12 +88,11 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	}
 
 	private Map<String, String> getMessageMap(String handsetNo, String serviceNo) {
-		MessageDAO messageDAO = new MessageDAO();
 
 		Map<String, String> map = new HashMap<String, String>();
-
-		List<Message> listMessage = messageDAO.findBySrcDestAddress(new Long(
-				handsetNo), new Long(serviceNo));
+		MessageService messageService = new MessageServiceImpl();
+		List<Message> listMessage = messageService.findBySrcDestAddress(
+				new Long(handsetNo), new Long(serviceNo));
 
 		map.put("handsetNo", handsetNo);
 		map.put("serviceNo", serviceNo);
@@ -112,19 +114,21 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public void insertMessage(String handsetNo, String serviceNo,
 			String shortMessage, Timestamp sendTime) {
+
 		saveMessage(handsetNo, serviceNo, shortMessage, sendTime);
 	}
 
 	private void saveMessage(String handsetNo, String serviceNo,
 			String shortMessage, Timestamp sendTime) {
-		MessageDAO messageDAO = new MessageDAO();
+
 		Message message = new Message();
 		message.setSource_addr(new Long(handsetNo));
 		message.setDest_addr(new Long(serviceNo));
 		message.setShort_message(shortMessage);
 		message.setMessage_type("MO");
 		message.setSend_time(sendTime);
-		messageDAO.save(message);
-	}
 
+		MessageService messageService = new MessageServiceImpl();
+		messageService.insertMoMessage(message);
+	}
 }
