@@ -27,7 +27,7 @@
 
 package com.seleniumsoftware.SMPPSim.pdu;
 
-import com.seleniumsoftware.SMPPSim.pdu.util.*;
+import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
 
 public class BindReceiver extends Request implements Demarshaller {
 

@@ -20,7 +20,7 @@ import com.seleniumsoftware.SMPPSim.SMPPSim;
  */
 public class DataServiceImpl extends RemoteServiceServlet implements
 		DataService {
-	// private static final Log log = LogFactory.getLog(DataServiceImpl.class);
+
 	private static final long serialVersionUID = 1L;
 	boolean isRunning = false;
 
@@ -60,8 +60,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	private Map<String, String> getMessageMap() {
 
 		MessageService messageService = new MessageServiceImpl();
-		Map<String, String> map = new TreeMap<String, String>();
-		//map.put("serviceNo","337788665522");
+		Map<String, String> map = new TreeMap<String, String>();	
 		
 		List<Message> listMessage = messageService.findAll();
 
@@ -69,7 +68,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			if (!map.containsKey("handsetNo")) {
 				map.put("handsetNo", message.getSource_addr().toString());
 			}
-			//if (!map.containsKey("serviceNo")) {
+
 			if (map.containsKey("serviceNo")) {
 				map.put("serviceNo", message.getDest_addr().toString());
 			}
@@ -87,6 +86,7 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		return map;
 	}
 
+	@SuppressWarnings("unused")
 	private Map<String, String> getMessageMap(String handsetNo, String serviceNo) {
 
 		Map<String, String> map = new HashMap<String, String>();

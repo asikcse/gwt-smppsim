@@ -24,11 +24,10 @@
  * http://www.seleniumsoftware.com
  * $Header: /var/cvsroot/SMPPSim2/src/java/com/seleniumsoftware/SMPPSim/exceptions/MessageStateNotFoundException.java,v 1.3 2007/11/23 08:52:29 martin Exp $
  ****************************************************************************
-*/
+ */
 package com.seleniumsoftware.SMPPSim.exceptions;
 
-public class MessageStateNotFoundException extends Exception
-{
+public class MessageStateNotFoundException extends Exception {
 	public MessageStateNotFoundException() {
 		super();
 	}

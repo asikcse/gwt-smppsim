@@ -1,6 +1,5 @@
 package com.seleniumsoftware.examples;
 
-import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +10,8 @@ import java.util.logging.Logger;
 
 public class CallbackHandler implements Runnable {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.examples");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.examples");
 
 	ServerSocket ss;
 
@@ -137,7 +137,7 @@ public class CallbackHandler implements Runnable {
 	private boolean isReceived(byte[] message) {
 		return (message[4] == 0x01);
 	}
-	
+
 	public void setRunning(boolean state) {
 		running = state;
 	}

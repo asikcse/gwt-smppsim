@@ -27,12 +27,43 @@
 
 package com.seleniumsoftware.SMPPSim;
 
-import com.seleniumsoftware.SMPPSim.exceptions.*;
-import com.seleniumsoftware.SMPPSim.pdu.*;
+import java.util.logging.Logger;
+
+import org.apache.regexp.RE;
+import org.apache.regexp.RESyntaxException;
+
+import com.seleniumsoftware.SMPPSim.exceptions.InboundQueueFullException;
+import com.seleniumsoftware.SMPPSim.exceptions.MessageStateNotFoundException;
+import com.seleniumsoftware.SMPPSim.exceptions.OutboundQueueFullException;
+import com.seleniumsoftware.SMPPSim.pdu.BindReceiver;
+import com.seleniumsoftware.SMPPSim.pdu.BindReceiverResp;
+import com.seleniumsoftware.SMPPSim.pdu.BindTransceiver;
+import com.seleniumsoftware.SMPPSim.pdu.BindTransceiverResp;
+import com.seleniumsoftware.SMPPSim.pdu.BindTransmitter;
+import com.seleniumsoftware.SMPPSim.pdu.BindTransmitterResp;
+import com.seleniumsoftware.SMPPSim.pdu.CancelSM;
+import com.seleniumsoftware.SMPPSim.pdu.CancelSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.DataSM;
+import com.seleniumsoftware.SMPPSim.pdu.DataSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.DeliverSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.EnquireLink;
+import com.seleniumsoftware.SMPPSim.pdu.EnquireLinkResp;
+import com.seleniumsoftware.SMPPSim.pdu.GenericNak;
+import com.seleniumsoftware.SMPPSim.pdu.GenericNakResp;
+import com.seleniumsoftware.SMPPSim.pdu.Pdu;
+import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
+import com.seleniumsoftware.SMPPSim.pdu.QuerySM;
+import com.seleniumsoftware.SMPPSim.pdu.QuerySMResp;
+import com.seleniumsoftware.SMPPSim.pdu.ReplaceSM;
+import com.seleniumsoftware.SMPPSim.pdu.ReplaceSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitMulti;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitMultiResp;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitSMResp;
+import com.seleniumsoftware.SMPPSim.pdu.Unbind;
+import com.seleniumsoftware.SMPPSim.pdu.UnbindResp;
 import com.seleniumsoftware.SMPPSim.pdu.util.PduUtilities;
-import com.seleniumsoftware.SMPPSim.util.*;
-import java.util.logging.*;
-import org.apache.regexp.*;
+import com.seleniumsoftware.SMPPSim.util.LoggingUtilities;
 
 public class StandardProtocolHandler {
 	static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
@@ -948,7 +979,8 @@ public class StandardProtocolHandler {
 	void setAddressRangeRegExp(String address_range) throws RESyntaxException {
 		logger.info("StandardProtocolHandler: setting address range to "
 				+ address_range);
-		if (address_range == null || address_range.equals("*") || address_range.equals(""))
+		if (address_range == null || address_range.equals("*")
+				|| address_range.equals(""))
 			address_range = "[:alnum:]*";
 		address_range_regexp = new RE(address_range);
 		logger.info("Made RE for " + address_range);
@@ -966,9 +998,9 @@ public class StandardProtocolHandler {
 			smsc.incDeliverSmOK();
 		else
 			smsc.incDeliverSmERR();
-		
+
 		iqueue.deliveryResult(smppmsg.getSeq_no(), smppmsg.getCmd_status());
-		
+
 		logger.info(" ");
 	}
 

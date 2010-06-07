@@ -27,20 +27,21 @@
  */
 package com.seleniumsoftware.SMPPSim;
 
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
 import com.seleniumsoftware.SMPPSim.exceptions.InboundQueueFullException;
-import com.seleniumsoftware.SMPPSim.pdu.*;
-import java.util.logging.*;
-import java.util.*;
+import com.seleniumsoftware.SMPPSim.pdu.Pdu;
 
 public class DelayedInboundQueue implements Runnable {
-	
+
 	private static DelayedInboundQueue diqueue;
 
 	private static Logger logger = Logger
 			.getLogger("com.seleniumsoftware.smppsim");
 
 	private Smsc smsc = Smsc.getInstance();
-	
+
 	private InboundQueue iqueue = InboundQueue.getInstance();
 
 	ArrayList<Pdu> delayed_queue_pdus;
@@ -68,8 +69,9 @@ public class DelayedInboundQueue implements Runnable {
 		synchronized (delayed_queue_pdus) {
 			synchronized (delayed_queue_attempts) {
 				if (!delayed_queue_pdus.contains(pdu)) {
-					logger.finest("DelayedInboundQueue: adding object to queue<"
-							+ pdu.toString() + ">");
+					logger
+							.finest("DelayedInboundQueue: adding object to queue<"
+									+ pdu.toString() + ">");
 					delayed_queue_pdus.add(pdu);
 					delayed_queue_attempts.add(new Integer(0));
 				} else {
@@ -77,9 +79,14 @@ public class DelayedInboundQueue implements Runnable {
 					if (i > -1) {
 						int a = delayed_queue_attempts.get(i).intValue();
 						a++;
-						delayed_queue_attempts.set(i,a);
-						logger.finest("DelayedInboundQueue: incremented retry count to "+a+" for "+"<"
-								+ pdu.toString() + ">");
+						delayed_queue_attempts.set(i, a);
+						logger
+								.finest("DelayedInboundQueue: incremented retry count to "
+										+ a
+										+ " for "
+										+ "<"
+										+ pdu.toString()
+										+ ">");
 					}
 				}
 				logger.info("DelayedInboundQueue: now contains "
@@ -87,35 +94,39 @@ public class DelayedInboundQueue implements Runnable {
 			}
 		}
 	}
-	
+
 	public void deliveredOK(Pdu pdu) {
 		int seqno = pdu.getSeq_no();
 		synchronized (delayed_queue_pdus) {
 			synchronized (delayed_queue_attempts) {
-				logger.finest("DelayedInboundQueue: removing object from queue<"
-						+ pdu.toString() + ">");
+				logger
+						.finest("DelayedInboundQueue: removing object from queue<"
+								+ pdu.toString() + ">");
 				int i = delayed_queue_pdus.indexOf(pdu);
 				if (i > -1) {
 					Pdu mo = delayed_queue_pdus.get(i);
 					if (mo.getSeq_no() == seqno) {
 						delayed_queue_pdus.remove(i);
 						delayed_queue_attempts.remove(i);
-						logger.finest("Removed delayed message because it was delivered OK or with permanent error. seqno="+seqno);
+						logger
+								.finest("Removed delayed message because it was delivered OK or with permanent error. seqno="
+										+ seqno);
 					}
 				}
 				logger.info("DelayedInboundQueue: now contains "
 						+ delayed_queue_pdus.size() + " object(s)");
 			}
 		}
-		
+
 	}
 
 	public void run() {
-		// this code periodically processes the contents of the delayed inbound queue, moving
-		// messages that are old enough to the active inbound queue for attempted delivery.
-		
-		logger.info("Starting DelayedInboundQueue service....");
+		// this code periodically processes the contents of the delayed inbound
+		// queue, moving
+		// messages that are old enough to the active inbound queue for
+		// attempted delivery.
 
+		logger.info("Starting DelayedInboundQueue service....");
 
 		while (true) {
 			try {
@@ -137,9 +148,16 @@ public class DelayedInboundQueue implements Runnable {
 										.intValue() + 1;
 								delayed_queue_attempts.set(i, new Integer(
 										attempts));
-								logger.finest("Requesting retry delivery of message "+mo.getSeq_no());
+								logger
+										.finest("Requesting retry delivery of message "
+												+ mo.getSeq_no());
 							} else {
-								logger.info("MO message not delivered after max ("+max_attempts+") allowed attempts so deleting : "+delayed_queue_pdus.get(i).getSeq_no());
+								logger
+										.info("MO message not delivered after max ("
+												+ max_attempts
+												+ ") allowed attempts so deleting : "
+												+ delayed_queue_pdus.get(i)
+														.getSeq_no());
 								delayed_queue_pdus.remove(i);
 							}
 						} catch (InboundQueueFullException e) {

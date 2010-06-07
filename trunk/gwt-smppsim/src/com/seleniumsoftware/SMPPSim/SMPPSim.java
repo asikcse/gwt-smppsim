@@ -37,15 +37,18 @@ using such an SMSC.
 ================================================================================================================
 
 V1.00 16/06/2001
-*/
+ */
 
 package com.seleniumsoftware.SMPPSim;
-import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.Socket;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
 
 public class SMPPSim {
 	private static final String version = "2.6.3";
@@ -57,8 +60,7 @@ public class SMPPSim {
 	private static final String DESTMSISDNPARAM = "mt_msisdn";
 
 	private static byte[] http200Response;
-	private static final String http200Message =
-		"HTTP/1.1 200\r\n\r\nDELIVER_SM invoked OK";
+	private static final String http200Message = "HTTP/1.1 200\r\n\r\nDELIVER_SM invoked OK";
 	private static byte[] http400Response;
 	private static final String http400Message = "HTTP/1.1 400\r\n\r\n";
 
@@ -66,7 +68,7 @@ public class SMPPSim {
 	private static boolean loopback = false;
 	private static boolean esme_to_esme = false;
 	private static int boundReceiverCount = 0;
-	
+
 	// Byte Stream Callback
 	private static boolean callback = false;
 	private static String callback_target_host;
@@ -76,7 +78,7 @@ public class SMPPSim {
 	// Queue configuration
 	private static int inbound_queue_capacity;
 	private static int outbound_queue_capacity;
-	private static int delayed_iqueue_period=60;
+	private static int delayed_iqueue_period = 60;
 	private static int delayed_inbound_queue_max_attempts;
 	private static int messageStateCheckFrequency;
 	private static int maxTimeEnroute;
@@ -87,13 +89,14 @@ public class SMPPSim {
 	private static int percentageRejected;
 	private static int discardFromQueueAfter;
 	private static long delayReceiptsBy;
-	
+
 	// Message ID allocation
-	private static long start_at=0;
-	private static String mid_prefix="";
+	private static long start_at = 0;
+	private static String mid_prefix = "";
 
 	// Logging
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	// Other
 	private static int smppPort;
@@ -104,8 +107,8 @@ public class SMPPSim {
 	private static String injectMoPage;
 	private static int maxConnectionHandlers;
 	private static String smscid;
-	private static String [] systemids;
-	private static String [] passwords;
+	private static String[] systemids;
+	private static String[] passwords;
 	private static boolean outbind_enabled;
 	private static String esme_ip_address;
 	private static int esme_port;
@@ -119,31 +122,18 @@ public class SMPPSim {
 	private static String protocolHandlerClassName;
 	private static String lifeCycleManagerClassName;
 
-	private static int[] messageTypes =
-		{
-			PduConstants.BIND_RECEIVER,
-			PduConstants.BIND_RECEIVER_RESP,
-			PduConstants.BIND_TRANSMITTER,
-			PduConstants.BIND_TRANSMITTER_RESP,
-			PduConstants.BIND_TRANSCEIVER,
-			PduConstants.BIND_TRANSCEIVER_RESP,
-			PduConstants.OUTBIND,
-			PduConstants.UNBIND,
-			PduConstants.UNBIND_RESP,
-			PduConstants.SUBMIT_SM,
-			PduConstants.SUBMIT_SM_RESP,
-			PduConstants.DELIVER_SM,
-			PduConstants.DELIVER_SM_RESP,
-			PduConstants.QUERY_SM,
-			PduConstants.QUERY_SM_RESP,
-			PduConstants.CANCEL_SM,
-			PduConstants.CANCEL_SM_RESP,
-			PduConstants.REPLACE_SM,
-			PduConstants.REPLACE_SM_RESP,
-			PduConstants.ENQUIRE_LINK,
-			PduConstants.ENQUIRE_LINK_RESP,
-			PduConstants.SUBMIT_MULTI,
-			PduConstants.SUBMIT_MULTI_RESP,
+	private static int[] messageTypes = { PduConstants.BIND_RECEIVER,
+			PduConstants.BIND_RECEIVER_RESP, PduConstants.BIND_TRANSMITTER,
+			PduConstants.BIND_TRANSMITTER_RESP, PduConstants.BIND_TRANSCEIVER,
+			PduConstants.BIND_TRANSCEIVER_RESP, PduConstants.OUTBIND,
+			PduConstants.UNBIND, PduConstants.UNBIND_RESP,
+			PduConstants.SUBMIT_SM, PduConstants.SUBMIT_SM_RESP,
+			PduConstants.DELIVER_SM, PduConstants.DELIVER_SM_RESP,
+			PduConstants.QUERY_SM, PduConstants.QUERY_SM_RESP,
+			PduConstants.CANCEL_SM, PduConstants.CANCEL_SM_RESP,
+			PduConstants.REPLACE_SM, PduConstants.REPLACE_SM_RESP,
+			PduConstants.ENQUIRE_LINK, PduConstants.ENQUIRE_LINK_RESP,
+			PduConstants.SUBMIT_MULTI, PduConstants.SUBMIT_MULTI_RESP,
 			PduConstants.GENERIC_NAK };
 
 	// PDU Capture
@@ -155,7 +145,7 @@ public class SMPPSim {
 	private static String captureSmeDecodedToFile;
 	private static boolean captureSmppsimDecoded;
 	private static String captureSmppsimDecodedToFile;
-		
+
 	public static void main(String args[]) throws Exception {
 		System.out.println("SMPPSim is starting....");
 		if ((args == null) || (args.length != 1)) {
@@ -185,239 +175,305 @@ public class SMPPSim {
 	private static void showUsage() {
 		System.out.println("Invalid or missing arguments:");
 		System.out.println("Usage:");
-		System.out.println(
-			"java -Djava.util.logging.config.file=<logging.properties file> com/seleniumsoftware/SMPPSim/SMPPSim <properties file>");
+		System.out
+				.println("java -Djava.util.logging.config.file=<logging.properties file> com/seleniumsoftware/SMPPSim/SMPPSim <properties file>");
 		System.out.println("");
 		System.out.println("Example:");
-		System.out.println(
-			"java -Djava.util.logging.config.file=conf\\logging.properties com/seleniumsoftware/SMPPSim/SMPPSim conf\\props.win");
+		System.out
+				.println("java -Djava.util.logging.config.file=conf\\logging.properties com/seleniumsoftware/SMPPSim/SMPPSim conf\\props.win");
 		System.out.println("");
 		System.out.println("Run terminated");
 	}
+
 	private static void initialise(Properties props) throws Exception {
 		http200Response = http200Message.getBytes();
 		http400Response = http400Message.getBytes();
 
-		maxConnectionHandlers =
-			Integer.parseInt(props.getProperty("SMPP_CONNECTION_HANDLERS"));
+		maxConnectionHandlers = Integer.parseInt(props
+				.getProperty("SMPP_CONNECTION_HANDLERS"));
 		smppPort = Integer.parseInt(props.getProperty("SMPP_PORT"));
-		connectionHandlerClassName =
-			props.getProperty("CONNECTION_HANDLER_CLASS");
+		connectionHandlerClassName = props
+				.getProperty("CONNECTION_HANDLER_CLASS");
 		protocolHandlerClassName = props.getProperty("PROTOCOL_HANDLER_CLASS");
 		lifeCycleManagerClassName = props.getProperty("LIFE_CYCLE_MANAGER");
-		String systemid_list = props.getProperty("SYSTEM_IDS","");
-		String password_list = props.getProperty("PASSWORDS","");
+		String systemid_list = props.getProperty("SYSTEM_IDS", "");
+		String password_list = props.getProperty("PASSWORDS", "");
 		systemids = systemid_list.split(",");
 		passwords = password_list.split(",");
 		if (systemids.length != passwords.length) {
-			logger.severe("Number of SYSTEM_IDS elements is not the same as the number of PASSWORDS elements");
-			throw new Exception("Number of SYSTEM_IDS elements is not the same as the number of PASSWORDS elements");
+			logger
+					.severe("Number of SYSTEM_IDS elements is not the same as the number of PASSWORDS elements");
+			throw new Exception(
+					"Number of SYSTEM_IDS elements is not the same as the number of PASSWORDS elements");
 		}
-		outbind_enabled = Boolean.valueOf(props.getProperty("OUTBIND_ENABLED")).booleanValue();
+		outbind_enabled = Boolean.valueOf(props.getProperty("OUTBIND_ENABLED"))
+				.booleanValue();
 		if (outbind_enabled) {
-			esme_ip_address = props.getProperty("OUTBIND_ESME_IP_ADDRESS","127.0.0.1");
+			esme_ip_address = props.getProperty("OUTBIND_ESME_IP_ADDRESS",
+					"127.0.0.1");
 			String ep = props.getProperty("OUTBIND_ESME_PORT");
 			try {
 				esme_port = Integer.parseInt(ep);
 			} catch (NumberFormatException nfe) {
-				logger.warning("ESME_PORT has invalid value "+ep+" - defaulting to 2776");
+				logger.warning("ESME_PORT has invalid value " + ep
+						+ " - defaulting to 2776");
 				esme_port = 2776;
 			}
 		}
-		esme_systemid = props.getProperty("OUTBIND_ESME_SYSTEMID","smppclient1");
-		esme_password = props.getProperty("OUTBIND_ESME_PASSWORD","password");
-		HTTPPort =
-			Integer.parseInt(props.getProperty("HTTP_PORT"));
-		HTTPThreads =
-			Integer.parseInt(props.getProperty("HTTP_THREADS"));
+		esme_systemid = props.getProperty("OUTBIND_ESME_SYSTEMID",
+				"smppclient1");
+		esme_password = props.getProperty("OUTBIND_ESME_PASSWORD", "password");
+		HTTPPort = Integer.parseInt(props.getProperty("HTTP_PORT"));
+		HTTPThreads = Integer.parseInt(props.getProperty("HTTP_THREADS"));
 		docroot = props.getProperty("DOCROOT");
 		authorisedFiles = props.getProperty("AUTHORISED_FILES");
 		injectMoPage = props.getProperty("INJECT_MO_PAGE");
 		smscid = props.getProperty("SMSCID");
-		deliverMessagesPerMin =
-			Integer.parseInt(props.getProperty("DELIVERY_MESSAGES_PER_MINUTE"));
+		deliverMessagesPerMin = Integer.parseInt(props
+				.getProperty("DELIVERY_MESSAGES_PER_MINUTE"));
 		if (deliverMessagesPerMin > 0) {
 			deliverFile = props.getProperty("DELIVER_MESSAGES_FILE");
 		} else {
 			deliverFile = "N/A";
 		}
-		
-		Smsc.setDecodePdus(Boolean.valueOf(props.getProperty("DECODE_PDUS_IN_LOG")).booleanValue());
 
-		setLoopback(Boolean.valueOf(props.getProperty("LOOPBACK")).booleanValue());
+		Smsc.setDecodePdus(Boolean.valueOf(
+				props.getProperty("DECODE_PDUS_IN_LOG")).booleanValue());
 
-		setEsme_to_esme(Boolean.valueOf(props.getProperty("ESME_TO_ESME")).booleanValue());
-		
+		setLoopback(Boolean.valueOf(props.getProperty("LOOPBACK"))
+				.booleanValue());
+
+		setEsme_to_esme(Boolean.valueOf(props.getProperty("ESME_TO_ESME"))
+				.booleanValue());
+
 		if (isLoopback() && isEsme_to_esme()) {
-			logger.severe("It is not valid to enable both LOOPBACK and ESME_TO_ESME routing. Please deselect one or both of these options");
+			logger
+					.severe("It is not valid to enable both LOOPBACK and ESME_TO_ESME routing. Please deselect one or both of these options");
 			throw new Exception();
 		}
 
-		inbound_queue_capacity = getIntProperty(props,"INBOUND_QUEUE_MAX_SIZE",1000);
-		outbound_queue_capacity = getIntProperty(props,"OUTBOUND_QUEUE_MAX_SIZE",1000);
-		messageStateCheckFrequency = getIntProperty(props,"MESSAGE_STATE_CHECK_FREQUENCY",10000);
-		maxTimeEnroute = getIntProperty(props,"MAX_TIME_ENROUTE",2000);
-		delayReceiptsBy = getLongProperty(props,"DELAY_DELIVERY_RECEIPTS_BY",0);
-		percentageThatTransition = getIntProperty(props,"PERCENTAGE_THAT_TRANSITION",75);
-		percentageDelivered = getIntProperty(props,"PERCENTAGE_DELIVERED",90);
-		percentageUndeliverable = getIntProperty(props,"PERCENTAGE_UNDELIVERABLE",6);
-		percentageAccepted = getIntProperty(props,"PERCENTAGE_ACCEPTED",2);
-		percentageRejected = getIntProperty(props,"PERCENTAGE_REJECTED",2);
-		discardFromQueueAfter = getIntProperty(props,"DISCARD_FROM_QUEUE_AFTER",60000);
-		delayed_iqueue_period = 1000 * getIntProperty(props,"DELAYED_INBOUND_QUEUE_PROCESSING_PERIOD",60);
-		delayed_inbound_queue_max_attempts = getIntProperty(props,"DELAYED_INBOUND_QUEUE_MAX_ATTEMPTS",10);
+		inbound_queue_capacity = getIntProperty(props,
+				"INBOUND_QUEUE_MAX_SIZE", 1000);
+		outbound_queue_capacity = getIntProperty(props,
+				"OUTBOUND_QUEUE_MAX_SIZE", 1000);
+		messageStateCheckFrequency = getIntProperty(props,
+				"MESSAGE_STATE_CHECK_FREQUENCY", 10000);
+		maxTimeEnroute = getIntProperty(props, "MAX_TIME_ENROUTE", 2000);
+		delayReceiptsBy = getLongProperty(props, "DELAY_DELIVERY_RECEIPTS_BY",
+				0);
+		percentageThatTransition = getIntProperty(props,
+				"PERCENTAGE_THAT_TRANSITION", 75);
+		percentageDelivered = getIntProperty(props, "PERCENTAGE_DELIVERED", 90);
+		percentageUndeliverable = getIntProperty(props,
+				"PERCENTAGE_UNDELIVERABLE", 6);
+		percentageAccepted = getIntProperty(props, "PERCENTAGE_ACCEPTED", 2);
+		percentageRejected = getIntProperty(props, "PERCENTAGE_REJECTED", 2);
+		discardFromQueueAfter = getIntProperty(props,
+				"DISCARD_FROM_QUEUE_AFTER", 60000);
+		delayed_iqueue_period = 1000 * getIntProperty(props,
+				"DELAYED_INBOUND_QUEUE_PROCESSING_PERIOD", 60);
+		delayed_inbound_queue_max_attempts = getIntProperty(props,
+				"DELAYED_INBOUND_QUEUE_MAX_ATTEMPTS", 10);
 
-		setCaptureSmeBinary(Boolean.valueOf(props.getProperty("CAPTURE_SME_BINARY")).booleanValue());
-		setCaptureSmeBinaryToFile(props.getProperty("CAPTURE_SME_BINARY_TO_FILE"));
-		setCaptureSmppsimBinary(Boolean.valueOf(props.getProperty("CAPTURE_SMPPSIM_BINARY")).booleanValue());
-		setCaptureSmppsimBinaryToFile(props.getProperty("CAPTURE_SMPPSIM_BINARY_TO_FILE"));
-		setCaptureSmeDecoded(Boolean.valueOf(props.getProperty("CAPTURE_SME_DECODED")).booleanValue());
-		setCaptureSmeDecodedToFile(props.getProperty("CAPTURE_SME_DECODED_TO_FILE"));
-		setCaptureSmppsimDecoded(Boolean.valueOf(props.getProperty("CAPTURE_SMPPSIM_DECODED")).booleanValue());
-		setCaptureSmppsimDecodedToFile(props.getProperty("CAPTURE_SMPPSIM_DECODED_TO_FILE"));
+		setCaptureSmeBinary(Boolean.valueOf(
+				props.getProperty("CAPTURE_SME_BINARY")).booleanValue());
+		setCaptureSmeBinaryToFile(props
+				.getProperty("CAPTURE_SME_BINARY_TO_FILE"));
+		setCaptureSmppsimBinary(Boolean.valueOf(
+				props.getProperty("CAPTURE_SMPPSIM_BINARY")).booleanValue());
+		setCaptureSmppsimBinaryToFile(props
+				.getProperty("CAPTURE_SMPPSIM_BINARY_TO_FILE"));
+		setCaptureSmeDecoded(Boolean.valueOf(
+				props.getProperty("CAPTURE_SME_DECODED")).booleanValue());
+		setCaptureSmeDecodedToFile(props
+				.getProperty("CAPTURE_SME_DECODED_TO_FILE"));
+		setCaptureSmppsimDecoded(Boolean.valueOf(
+				props.getProperty("CAPTURE_SMPPSIM_DECODED")).booleanValue());
+		setCaptureSmppsimDecodedToFile(props
+				.getProperty("CAPTURE_SMPPSIM_DECODED_TO_FILE"));
 
 		// Byte stream callbacks
-		callback = Boolean.valueOf(props.getProperty("CALLBACK")).booleanValue();
+		callback = Boolean.valueOf(props.getProperty("CALLBACK"))
+				.booleanValue();
 		if (callback) {
 			callback_target_host = props.getProperty("CALLBACK_TARGET_HOST");
-			callback_port = Integer.parseInt(props.getProperty("CALLBACK_PORT"));
+			callback_port = Integer
+					.parseInt(props.getProperty("CALLBACK_PORT"));
 			callback_id = props.getProperty("CALLBACK_ID");
 		}
-		
+
 		// Message ID allocations
-		
+
 		String mid_start = props.getProperty("START_MESSAGE_ID_AT");
-		if (mid_start == null || mid_start.equals("")) 
-			mid_start="0";
+		if (mid_start == null || mid_start.equals(""))
+			mid_start = "0";
 		if (mid_start.equalsIgnoreCase("random")) {
-			start_at = (long) (Math.random()* 10000000);
+			start_at = (long) (Math.random() * 10000000);
 		} else
 			start_at = Long.parseLong(mid_start);
-		
+
 		mid_prefix = props.getProperty("MESSAGE_ID_PREFIX");
 		if (mid_prefix == null)
 			mid_prefix = "";
 
 		// Misc
-		byte [] s = new byte[smscid.length()];
+		byte[] s = new byte[smscid.length()];
 		s = smscid.getBytes();
 		Smsc.setSMSC_SYSTEMID(s);
 	}
 
 	private static void showLegals() {
-		logger.info(
-			"==============================================================");
+		logger
+				.info("==============================================================");
 		logger.info("=  SMPPSim Copyright (C) 2006 Selenium Software Ltd");
-		logger.info(
-			"=  SMPPSim comes with ABSOLUTELY NO WARRANTY; for details");
-		logger.info(
-			"=  read the license.txt file that was included in the SMPPSim distribution");
-		logger.info(
-			"=  This is free software, and you are welcome to redistribute it under");
-		logger.info(
-			"=  certain conditions; Again, see license.txt for details or read the GNU");
+		logger
+				.info("=  SMPPSim comes with ABSOLUTELY NO WARRANTY; for details");
+		logger
+				.info("=  read the license.txt file that was included in the SMPPSim distribution");
+		logger
+				.info("=  This is free software, and you are welcome to redistribute it under");
+		logger
+				.info("=  certain conditions; Again, see license.txt for details or read the GNU");
 		logger.info("=  GPL license at http://www.gnu.org/licenses/gpl.html");
 		logger.info("=  ...... end of legal stuff ......");
 
 	}
 
 	private static void showConfiguration() {
-		logger.info(
-			"==============================================================");
+		logger
+				.info("==============================================================");
 		logger.info("=  ");
 		logger.info("=  com.seleniumsoftware.SMPPSim " + version);
 		logger.info("=  by Martin Woolley (martin@seleniumsoftware.com)");
 		logger.info("=  http://www.seleniumsoftware.com");
 		logger.info("=  Running with the following parameters:");
 		logger.info("=  SMPP_PORT                               :" + smppPort);
-		logger.info("=  SMPP_CONNECTION_HANDLERS                :" + maxConnectionHandlers);
-		logger.info("=  CONNECTION_HANDLER_CLASS                :" + connectionHandlerClassName);
-		logger.info("=  PROTOCOL_HANDLER_CLASS                  :" + protocolHandlerClassName);
-		logger.info("=  LIFE_CYCLE_MANAGER                      :" + lifeCycleManagerClassName);
-		logger.info("=  SMPP_CONNECTION_HANDLERS                :" + maxConnectionHandlers);
-		logger.info("=  INBOUND_QUEUE_CAPACITY                  :" + inbound_queue_capacity);
-		logger.info("=  OUTBOUND_QUEUE_CAPACITY                 :" + outbound_queue_capacity);
-		logger.info("=  MESSAGE_STATE_CHECK_FREQUENCY           :" + messageStateCheckFrequency);
-		logger.info("=  MAX_TIME_ENROUTE                        :" + maxTimeEnroute);
-		logger.info("=  PERCENTAGE_THAT_TRANSITION              :" + percentageThatTransition);
-		logger.info("=  PERCENTAGE_DELIVERED                    :" + percentageDelivered);
-		logger.info("=  PERCENTAGE_UNDELIVERABLE                :" + percentageUndeliverable);
-		logger.info("=  PERCENTAGE_ACCEPTED                     :" + percentageAccepted);
-		logger.info("=  PERCENTAGE_REJECTED                     :" + percentageRejected);
-		logger.info("=  DISCARD_FROM_QUEUE_AFTER                :" + discardFromQueueAfter);
-		logger.info("=  OUTBIND_ENABLED                         :" + outbind_enabled);
-		logger.info("=  OUTBIND_ESME_IP_ADDRESS                 :" + esme_ip_address);
+		logger.info("=  SMPP_CONNECTION_HANDLERS                :"
+				+ maxConnectionHandlers);
+		logger.info("=  CONNECTION_HANDLER_CLASS                :"
+				+ connectionHandlerClassName);
+		logger.info("=  PROTOCOL_HANDLER_CLASS                  :"
+				+ protocolHandlerClassName);
+		logger.info("=  LIFE_CYCLE_MANAGER                      :"
+				+ lifeCycleManagerClassName);
+		logger.info("=  SMPP_CONNECTION_HANDLERS                :"
+				+ maxConnectionHandlers);
+		logger.info("=  INBOUND_QUEUE_CAPACITY                  :"
+				+ inbound_queue_capacity);
+		logger.info("=  OUTBOUND_QUEUE_CAPACITY                 :"
+				+ outbound_queue_capacity);
+		logger.info("=  MESSAGE_STATE_CHECK_FREQUENCY           :"
+				+ messageStateCheckFrequency);
+		logger.info("=  MAX_TIME_ENROUTE                        :"
+				+ maxTimeEnroute);
+		logger.info("=  PERCENTAGE_THAT_TRANSITION              :"
+				+ percentageThatTransition);
+		logger.info("=  PERCENTAGE_DELIVERED                    :"
+				+ percentageDelivered);
+		logger.info("=  PERCENTAGE_UNDELIVERABLE                :"
+				+ percentageUndeliverable);
+		logger.info("=  PERCENTAGE_ACCEPTED                     :"
+				+ percentageAccepted);
+		logger.info("=  PERCENTAGE_REJECTED                     :"
+				+ percentageRejected);
+		logger.info("=  DISCARD_FROM_QUEUE_AFTER                :"
+				+ discardFromQueueAfter);
+		logger.info("=  OUTBIND_ENABLED                         :"
+				+ outbind_enabled);
+		logger.info("=  OUTBIND_ESME_IP_ADDRESS                 :"
+				+ esme_ip_address);
 		logger.info("=  OUTBIND_ESME_PORT		                :" + esme_port);
-		logger.info("=  OUTBIND_ESME_PASSWORD                   :" + esme_password);
+		logger.info("=  OUTBIND_ESME_PASSWORD                   :"
+				+ esme_password);
 		logger.info("=  HTTP_PORT                               :" + HTTPPort);
-		logger.info("=  HTTP_THREADS                            :" + HTTPThreads);
+		logger.info("=  HTTP_THREADS                            :"
+				+ HTTPThreads);
 		logger.info("=  DOCROOT                                 :" + docroot);
-		logger.info("=  AUTHORISED_FILES                        :" + authorisedFiles);
-		logger.info("=  INJECT_MO_PAGE                          :" + injectMoPage);
+		logger.info("=  AUTHORISED_FILES                        :"
+				+ authorisedFiles);
+		logger.info("=  INJECT_MO_PAGE                          :"
+				+ injectMoPage);
 		logger.info("=  SMSCID                                  :" + smscid);
-		logger.info("=  DELIVERY_MESSAGES_PER_MINUTE            :" + deliverMessagesPerMin);
-		logger.info("=  DELIVER_MESSAGES_FILE                   :" + deliverFile);
-		logger.info("=  LOOPBACK                                :" + isLoopback());
-		logger.info("=  CAPTURE_REQUESTS_BINARY                 :" + isCaptureSmeBinary());
-		logger.info("=  CAPTURE_REQUESTS_BINARY_TO_FILE         :" + captureSmeBinaryToFile);
-		logger.info("=  CAPTURE_RESPONSES_BINARY                :" + isCaptureSmppsimBinary());
-		logger.info("=  CAPTURE_RESPONSES_BINARY_TO_FILE        :" + captureSmppsimBinaryToFile);
-		logger.info("=  CAPTURE_REQUESTS_DECODED                :" + isCaptureSmeDecoded());
-		logger.info("=  CAPTURE_REQUESTS_DECODED_TO_FILE        :" + captureSmeDecodedToFile);
-		logger.info("=  CAPTURE_RESPONSES_DECODED               :" + isCaptureSmppsimDecoded());
-		logger.info("=  CAPTURE_RESPONSES_DECODED_TO_FILE       :" + captureSmppsimDecodedToFile);
+		logger.info("=  DELIVERY_MESSAGES_PER_MINUTE            :"
+				+ deliverMessagesPerMin);
+		logger.info("=  DELIVER_MESSAGES_FILE                   :"
+				+ deliverFile);
+		logger.info("=  LOOPBACK                                :"
+				+ isLoopback());
+		logger.info("=  CAPTURE_REQUESTS_BINARY                 :"
+				+ isCaptureSmeBinary());
+		logger.info("=  CAPTURE_REQUESTS_BINARY_TO_FILE         :"
+				+ captureSmeBinaryToFile);
+		logger.info("=  CAPTURE_RESPONSES_BINARY                :"
+				+ isCaptureSmppsimBinary());
+		logger.info("=  CAPTURE_RESPONSES_BINARY_TO_FILE        :"
+				+ captureSmppsimBinaryToFile);
+		logger.info("=  CAPTURE_REQUESTS_DECODED                :"
+				+ isCaptureSmeDecoded());
+		logger.info("=  CAPTURE_REQUESTS_DECODED_TO_FILE        :"
+				+ captureSmeDecodedToFile);
+		logger.info("=  CAPTURE_RESPONSES_DECODED               :"
+				+ isCaptureSmppsimDecoded());
+		logger.info("=  CAPTURE_RESPONSES_DECODED_TO_FILE       :"
+				+ captureSmppsimDecodedToFile);
 		logger.info("=  CALLBACK                                :" + callback);
 		if (callback) {
-			logger.info("=  CALLBACK_TARGET_HOST                    :" + callback_target_host);
-			logger.info("=  CALLBACK_PORT                           :" + callback_port);
+			logger.info("=  CALLBACK_TARGET_HOST                    :"
+					+ callback_target_host);
+			logger.info("=  CALLBACK_PORT                           :"
+					+ callback_port);
 		}
 		logger.info("=  ");
-		logger.info("==============================================================");
+		logger
+				.info("==============================================================");
 
 	}
 
 	public SMPPSim() {
 	}
 
-	private static int getIntProperty(Properties props, String name, int defaultValue) {
+	private static int getIntProperty(Properties props, String name,
+			int defaultValue) {
 		String x = props.getProperty(name);
-		int value=defaultValue;
-		if (x == null || x.equals("") ) {
-			logger.warning(name+" not specified. Defaulting to "+defaultValue);
+		int value = defaultValue;
+		if (x == null || x.equals("")) {
+			logger.warning(name + " not specified. Defaulting to "
+					+ defaultValue);
 			return defaultValue;
 		} else {
 			try {
 				value = Integer.parseInt(x);
 				return value;
-			}
-			catch (NumberFormatException e) {
-				logger.warning(name+" has invalid value "+x+". Defaulting to "+defaultValue);
-				return defaultValue;				
+			} catch (NumberFormatException e) {
+				logger.warning(name + " has invalid value " + x
+						+ ". Defaulting to " + defaultValue);
+				return defaultValue;
 			}
 		}
-	
+
 	}
 
-	private static long getLongProperty(Properties props, String name, long defaultValue) {
+	private static long getLongProperty(Properties props, String name,
+			long defaultValue) {
 		String x = props.getProperty(name);
-		long value=defaultValue;
-		if (x == null || x.equals("") ) {
-			logger.warning(name+" not specified. Defaulting to "+defaultValue);
+		long value = defaultValue;
+		if (x == null || x.equals("")) {
+			logger.warning(name + " not specified. Defaulting to "
+					+ defaultValue);
 			return defaultValue;
 		} else {
 			try {
 				value = Long.parseLong(x);
 				return value;
-			}
-			catch (NumberFormatException e) {
-				logger.warning(name+" has invalid value "+x+". Defaulting to "+defaultValue);
-				return defaultValue;				
+			} catch (NumberFormatException e) {
+				logger.warning(name + " has invalid value " + x
+						+ ". Defaulting to " + defaultValue);
+				return defaultValue;
 			}
 		}
-	
+
 	}
 
-		
 	/**
 	 * @return
 	 */
@@ -501,6 +557,7 @@ public class SMPPSim {
 	public static int getHTTPThreads() {
 		return HTTPThreads;
 	}
+
 	/**
 	 * @return
 	 */
@@ -697,6 +754,7 @@ public class SMPPSim {
 	public static void setMaxConnectionHandlers(int i) {
 		maxConnectionHandlers = i;
 	}
+
 	/**
 	 * @return
 	 */

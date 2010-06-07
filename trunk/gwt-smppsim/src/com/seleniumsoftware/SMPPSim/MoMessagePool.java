@@ -37,7 +37,8 @@ import java.io.*;
 
 public class MoMessagePool {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	private Vector<DeliverSM> messages;
 
@@ -118,14 +119,18 @@ public class MoMessagePool {
 				destination_addr = rec.substring(commaIX1 + 1, commaIX2);
 				msg = rec.substring(commaIX2 + 1, rec.length());
 				data_coding = 0;
-				if (!msg.startsWith("0x")) 
+				if (!msg.startsWith("0x"))
 					short_message = msg.getBytes();
 				else {
 					try {
-						short_message = Utilities.makeBinaryMessage(msg.substring(2));
+						short_message = Utilities.makeBinaryMessage(msg
+								.substring(2));
 						data_coding = 4; // binary
 					} catch (InvalidHexStringlException e) {
-						logger.warning("Invalid hex string in MO service input file: <"+msg+">. Used as plain text instead.");
+						logger
+								.warning("Invalid hex string in MO service input file: <"
+										+ msg
+										+ ">. Used as plain text instead.");
 						short_message = msg.getBytes();
 					}
 				}

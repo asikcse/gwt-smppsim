@@ -26,13 +26,16 @@
  ****************************************************************************/
 
 package com.seleniumsoftware.SMPPSim;
-import com.seleniumsoftware.SMPPSim.pdu.*;
 
-import java.util.logging.*;
+import java.util.logging.Logger;
+
+import com.seleniumsoftware.SMPPSim.pdu.PduConstants;
+import com.seleniumsoftware.SMPPSim.pdu.SubmitSM;
 
 public class DeterministicLifeCycleManager extends LifeCycleManager {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 	private Smsc smsc = Smsc.getInstance();
 	private int discardThreshold;
 
@@ -44,7 +47,7 @@ public class DeterministicLifeCycleManager extends LifeCycleManager {
 	public MessageState setState(MessageState m) {
 		// Should a transition take place at all?
 		if (isTerminalState(m.getState()))
-			return m;	
+			return m;
 		byte currentState = m.getState();
 		String dest = m.getPdu().getDestination_addr();
 		if (dest.substring(0, 1).equals("1")) {
@@ -63,16 +66,12 @@ public class DeterministicLifeCycleManager extends LifeCycleManager {
 			m.setFinal_time(System.currentTimeMillis());
 			// If delivery receipt requested prepare it....
 			SubmitSM p = m.getPdu();
-			if (p.getRegistered_delivery_flag() == 1 &&
-			    currentState != m.getState()) {
+			if (p.getRegistered_delivery_flag() == 1
+					&& currentState != m.getState()) {
 				// delivery_receipt requested
 				logger.info("Delivery Receipt requested");
-				smsc.prepareDeliveryReceipt(
-					p,
-					m.getMessage_id(),
-					m.getState(),
-					1,
-					1);
+				smsc.prepareDeliveryReceipt(p, m.getMessage_id(), m.getState(),
+						1, 1);
 			}
 		}
 		return m;

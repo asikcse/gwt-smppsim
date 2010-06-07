@@ -28,14 +28,14 @@
 
 package com.seleniumsoftware.SMPPSim;
 
-import com.seleniumsoftware.SMPPSim.exceptions.InvalidHexStringlException;
-import com.seleniumsoftware.SMPPSim.pdu.*;
+import java.util.logging.Logger;
 
-import java.util.logging.*;
+import com.seleniumsoftware.SMPPSim.pdu.DeliverSM;
 
 public class MoService implements Runnable {
 
-	private static Logger logger = Logger.getLogger("com.seleniumsoftware.smppsim");
+	private static Logger logger = Logger
+			.getLogger("com.seleniumsoftware.smppsim");
 
 	private Smsc smsc = Smsc.getInstance();
 
