@@ -18,7 +18,7 @@ public class DerbyHibernateTest {
 	 */
 	public static void main(String[] args) {
 
-		 insertMessage();
+		// insertMessage();
 		// deleteMessage();
 		// deleteByID(2);
 		// deleteAll();

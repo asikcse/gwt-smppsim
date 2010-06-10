@@ -15,8 +15,8 @@ import java.util.Date;
 public class DerbyCRUDTest {
 
 	private static Connection conn = null;
-	private static String url = "jdbc:derby:gwt-smppsim-database;create=true;user=gateway;password=gateway12@";
-	/*private static String url = "jdbc:derby:gwt-smppsim-database;create=true;";*/
+	/*private static String url = "jdbc:derby:gwt-smppsim-database;create=true;user=gateway;password=gateway12@";*/
+	private static String url = "jdbc:derby:gwt-smppsim-database;create=true;";
 	private static Statement stmt = null;
 
 	/**

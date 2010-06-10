@@ -9,8 +9,9 @@ public class StartSMPPSim {
 	 */
 	public static void main(String[] args) {
 		boolean isRunning= false;
+		String configFile = "/home/devang/workspace_FDS/GWT-SMPPSim/conf/smppsim.props";
 		String[] arguemnts = new String[1];		
-		arguemnts[0] = "/home/devang/workspace_FDS/GWT-SMPPSim/conf/smppsim.props";
+		arguemnts[0] = configFile;
 		try {		
 			if(!isRunning){
 				SMPPSim.main(arguemnts);
