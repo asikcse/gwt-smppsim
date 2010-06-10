@@ -36,10 +36,9 @@ public class ChangeBtnHandler implements ClickHandler {
 	 * .dom.client.ClickEvent)
 	 */
 	@Override
-	public void onClick(ClickEvent event) {	
-		gwtSMPPSim.getInitMap().put("handsetNo", gwtSMPPSim.getHansetNum().getText());
-		gwtSMPPSim.getInitMap().put("serviceNo", gwtSMPPSim.getServiceNum().getText());
-
+	public void onClick(ClickEvent event) {
+		gwtSMPPSim.getInitMap().put("handsetNo",
+				gwtSMPPSim.getHansetNum().getText());
 	}
 
 	/**

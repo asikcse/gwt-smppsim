@@ -66,11 +66,9 @@ public class MessageHandler implements ClickHandler {
 						caught.getStackTrace();
 					}
 				});
-
-		// TODO: Read property file & get host, port for the url
-		// Properties props = new Properties();
-		String host = "localhost";
-		int port = 8080;
+		
+		String host = gwtSMPPSim.getHiddenHost().getValue();
+		int port = Integer.parseInt(gwtSMPPSim.getHiddenHttpPort().getValue());
 
 		String url = "http://"
 				+ host

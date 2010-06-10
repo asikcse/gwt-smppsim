@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
@@ -29,9 +30,13 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 	 */
 	private void startSMPPSim() {
 		String[] arguemnts = new String[1];
-		// TODO remove static value of arguments[0], get it from configuration
-		// file
-		arguemnts[0] = "/home/devang/workspace_FDS/GWT-SMPPSim/conf/smppsim.props";
+		String configFile = "";
+				
+		ResourceBundle bundle = ResourceBundle.getBundle("com.gtl.fonecta.configuration");
+		configFile = bundle.getString("CONFIG_FILE");		
+
+		
+		arguemnts[0] = configFile;
 		try {
 			if (!isRunning) {
 				SMPPSim.main(arguemnts);
@@ -59,8 +64,18 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 
 	private Map<String, String> getMessageMap() {
 
+		ResourceBundle bundle = ResourceBundle.getBundle("com.gtl.fonecta.configuration");
+		String host = null;
+		String port ;		
+		host = bundle.getString("HOST");
+		port =  bundle.getString("HTTP_PORT");
+		
+		
 		MessageService messageService = new MessageServiceImpl();
-		Map<String, String> map = new TreeMap<String, String>();	
+		Map<String, String> map = new TreeMap<String, String>();
+		
+		map.put("host", host);
+		map.put("port", port);
 		
 		List<Message> listMessage = messageService.findAll();
 
@@ -88,8 +103,15 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 
 	@SuppressWarnings("unused")
 	private Map<String, String> getMessageMap(String handsetNo, String serviceNo) {
-
+		ResourceBundle bundle = ResourceBundle.getBundle("com.gtl.fonecta.configuration");
+		String host = bundle.getString("HOST");
+		String port =  bundle.getString("HTTP_PORT");;		
+				
 		Map<String, String> map = new HashMap<String, String>();
+		
+		map.put("host", host);
+		map.put("port", port);		
+		
 		MessageService messageService = new MessageServiceImpl();
 		List<Message> listMessage = messageService.findBySrcDestAddress(
 				new Long(handsetNo), new Long(serviceNo));
