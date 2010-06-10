@@ -6,13 +6,17 @@
 package com.gtl.fonecta.client;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextArea;
@@ -30,8 +34,12 @@ import com.gtl.fonecta.client.handler.MessageHandler;
 public class GWT_SMPPSim implements EntryPoint {
 
 	private DataServiceAsync serviceProxy;
-	Map<String, String> initMap = null;
+	Map<String, String> initMap = new TreeMap<String, String>();
 
+	Hidden hiddenHost;
+	
+
+	Hidden hiddenHttpPort;
 	VerticalPanel mainVPanel;
 	VerticalPanel leftVPanel;
 	VerticalPanel rightVPanel;
@@ -51,7 +59,7 @@ public class GWT_SMPPSim implements EntryPoint {
 	String shortMessage;
 
 	GWT_SMPPSim() {
-		// System.out.println("Constructor---");
+		
 		serviceProxy = GWT.create(DataService.class);
 
 		serviceProxy.getInitialData(new AsyncCallback<Map<String, String>>() {
@@ -74,17 +82,26 @@ public class GWT_SMPPSim implements EntryPoint {
 	 * this method should set the component's values
 	 */
 	protected void setComponetValue() {
-		for (String key : initMap.keySet()) {
-			if (key.contentEquals("handsetNo")) {
-				hansetNo = initMap.get(key);
-				hansetNum.setText(hansetNo);
-			} else if (key.contentEquals("serviceNo")) {
-				serviceNo = initMap.get(key);
-				serviceNum.setText(serviceNo);
-			} else if (key.contains("MO")) {
-				leftVPanel.add(new HTML(initMap.get(key) + "<br>"));
-			} else if (key.contains("MT")) {
-				rightVPanel.add(new HTML(initMap.get(key) + "<br>"));
+
+		leftVPanel.clear();
+		rightVPanel.clear();
+		if (initMap.size() > 0) {
+			for (String key : initMap.keySet()) {
+				if (key.contentEquals("handsetNo")) {
+					hansetNo = initMap.get(key);
+					hansetNum.setText(hansetNo);
+				} else if (key.contentEquals("serviceNo")) {
+					serviceNo = initMap.get(key);
+					serviceNum.setText(serviceNo);
+				} else if (key.contains("MO")) {
+					leftVPanel.add(new HTML(initMap.get(key) + "<br>"));
+				} else if (key.contains("MT")) {
+					rightVPanel.add(new HTML(initMap.get(key) + "<br>"));
+				} else if(key.contains("port")) {
+					hiddenHttpPort.setValue(initMap.get(key)); 
+				} else if(key.contains("host")) {					
+					hiddenHost.setValue(initMap.get(key));					
+				}				
 			}
 		}
 	}
@@ -94,6 +111,9 @@ public class GWT_SMPPSim implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 
+		hiddenHost= new Hidden();
+		hiddenHttpPort = new Hidden(); 
+		
 		mainVPanel = new VerticalPanel();
 		handsetNumLabel = new Label("Handset number :");
 		serviceNumLabel = new Label("Service number :");
@@ -107,6 +127,7 @@ public class GWT_SMPPSim implements EntryPoint {
 		serviceNum = new TextBox();
 		serviceNo = "337788665522";
 		serviceNum.setText(serviceNo);
+		serviceNum.setEnabled(false);
 
 		textMessage = new TextArea();
 		textMessage.setText("Hello from SMPPSim");
@@ -144,11 +165,15 @@ public class GWT_SMPPSim implements EntryPoint {
 		leftVPanel = new VerticalPanel();
 		rightVPanel = new VerticalPanel();
 
+		rightVPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		rightVPanel.setHeight("50px");
+		leftVPanel.setVerticalAlignment(HasVerticalAlignment.ALIGN_BOTTOM);
+		leftVPanel.setHeight("50px");
+
 		msgGrid.setWidget(1, 0, leftVPanel);
 
 		msgGrid.setWidget(1, 1, rightVPanel);
 		msgGrid.getWidget(1, 1).setWidth("300px");
-
 		msgGrid.getWidget(1, 1).setStyleName("rightAlign");
 
 		mainVPanel.add(topGrid);
@@ -158,6 +183,33 @@ public class GWT_SMPPSim implements EntryPoint {
 		mainVPanel.setStyleName("table-center");
 
 		RootPanel.get().add(mainVPanel);
+		
+
+		try {
+			 // Setup timer to refresh MT and MO messages automatically.
+			Timer refreshTimer = new Timer() {
+			      @Override
+			      public void run() {
+			    	  serviceProxy.getInitialData(new AsyncCallback<Map<String, String>>() {
+
+			  			@Override
+			  			public void onFailure(Throwable caught) {
+			  				System.out.println("FAIL" + caught.getMessage());
+			  				caught.getStackTrace();
+			  			}
+
+			  			@Override
+			  			public void onSuccess(Map<String, String> result) {
+			  				initMap = result;
+			  				setComponetValue();
+			  			}
+			  		});			    				    
+			      }
+			    };
+			    refreshTimer.scheduleRepeating(10000);	
+		} catch (Exception e) {		
+			System.out.println("EXCEPTION");
+		} 	    
 	}
 
 	/**
@@ -263,5 +315,33 @@ public class GWT_SMPPSim implements EntryPoint {
 	 */
 	public void setInitMap(Map<String, String> initMap) {
 		this.initMap = initMap;
+	}
+	
+	/**
+	 * @return the hiddenHost
+	 */
+	public Hidden getHiddenHost() {
+		return hiddenHost;
+	}
+
+	/**
+	 * @param hiddenHost the hiddenHost to set
+	 */
+	public void setHiddenHost(Hidden hiddenHost) {
+		this.hiddenHost = hiddenHost;
+	}
+
+	/**
+	 * @return the hiddenHttpPort
+	 */
+	public Hidden getHiddenHttpPort() {
+		return hiddenHttpPort;
+	}
+
+	/**
+	 * @param hiddenHttpPort the hiddenHttpPort to set
+	 */
+	public void setHiddenHttpPort(Hidden hiddenHttpPort) {
+		this.hiddenHttpPort = hiddenHttpPort;
 	}
 }
