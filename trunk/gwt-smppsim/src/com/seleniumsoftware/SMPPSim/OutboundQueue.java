@@ -63,10 +63,7 @@ public class OutboundQueue implements Runnable {
 	public synchronized void addMessageState(MessageState message)
 			throws OutboundQueueFullException {
 		/* Start Changes */
-		System.out.println("\n===== "
-				+ message.getPdu().getDestination_addr().toString());
-		System.out.println("\n===== "
-				+ new String(message.getPdu().getShort_message()));
+		
 		Message message2 = new Message();
 		message2.setDest_addr(Long.parseLong(message.getPdu()
 				.getDestination_addr().toString().replace("+", "")));
