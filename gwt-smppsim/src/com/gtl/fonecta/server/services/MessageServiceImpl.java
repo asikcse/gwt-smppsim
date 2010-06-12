@@ -29,7 +29,7 @@ public class MessageServiceImpl implements MessageService {
 	@Override
 	public void insertMtMessage(Message message) {
 		MessageDAO messageDAO = new MessageDAO();
-		message.setMessage_type("MT");
+		message.setMessageType("MT");
 		messageDAO.save(message);
 	}
 

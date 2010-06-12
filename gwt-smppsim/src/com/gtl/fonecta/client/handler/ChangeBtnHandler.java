@@ -2,7 +2,7 @@ package com.gtl.fonecta.client.handler;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.gtl.fonecta.client.GWT_SMPPSim;
+import com.gtl.fonecta.client.GwtSmppSim;
 
 /**
  * @author devang
@@ -10,7 +10,7 @@ import com.gtl.fonecta.client.GWT_SMPPSim;
  */
 public class ChangeBtnHandler implements ClickHandler {
 
-	GWT_SMPPSim gwtSMPPSim;
+	GwtSmppSim gwtSMPPSim;
 
 	/**
 	 * Default constructor
@@ -23,7 +23,7 @@ public class ChangeBtnHandler implements ClickHandler {
 	 * 
 	 * @param gwtSMPPSim
 	 */
-	public ChangeBtnHandler(GWT_SMPPSim gwtSMPPSim) {
+	public ChangeBtnHandler(GwtSmppSim gwtSMPPSim) {
 		super();
 		this.gwtSMPPSim = gwtSMPPSim;
 	}
@@ -44,7 +44,7 @@ public class ChangeBtnHandler implements ClickHandler {
 	/**
 	 * @return the gwtSMPPSim
 	 */
-	public GWT_SMPPSim getGwtSMPPSim() {
+	public GwtSmppSim getGwtSMPPSim() {
 		return gwtSMPPSim;
 	}
 
@@ -52,7 +52,7 @@ public class ChangeBtnHandler implements ClickHandler {
 	 * @param gwtSMPPSim
 	 *            the gwtSMPPSim to set
 	 */
-	public void setGwtSMPPSim(GWT_SMPPSim gwtSMPPSim) {
+	public void setGwtSMPPSim(GwtSmppSim gwtSMPPSim) {
 		this.gwtSMPPSim = gwtSMPPSim;
 	}
 }

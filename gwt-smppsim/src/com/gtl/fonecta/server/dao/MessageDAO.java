@@ -36,7 +36,7 @@ public class MessageDAO extends BaseHibernateDAO {
 			messageId = (Integer) session.save(message);
 			message.setMsgId(messageId);
 			transaction.commit();
-			log.info("inserted 1 message of type " + message.getMessage_type());
+			log.info("inserted 1 message of type " + message.getMessageType());
 		} catch (Exception e) {
 			log.error(e);
 			log.error(e);

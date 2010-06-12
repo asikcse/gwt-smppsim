@@ -65,16 +65,16 @@ public class OutboundQueue implements Runnable {
 		/* Start Changes */
 		
 		Message message2 = new Message();
-		message2.setDest_addr(Long.parseLong(message.getPdu()
+		message2.setDestAddr(Long.parseLong(message.getPdu()
 				.getDestination_addr().toString().replace("+", "")));
-		message2.setShort_message(new String(message.getPdu()
+		message2.setShortMessage(new String(message.getPdu()
 				.getShort_message()));
-		message2.setSource_addr(new Long(337788665522L));
+		message2.setSourceAddr(new Long(337788665522L));
 		Date date = new Date();
 		Timestamp sendTime = new Timestamp(date.getYear(), date.getMonth(),
 				date.getDate(), date.getHours(), date.getMinutes(), date
 						.getSeconds(), 0);
-		message2.setSend_time(sendTime);
+		message2.setSendTime(sendTime);
 
 		MessageService messageService = new MessageServiceImpl();
 		messageService.insertMtMessage(message2);

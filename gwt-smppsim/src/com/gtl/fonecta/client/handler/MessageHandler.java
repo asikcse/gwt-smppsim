@@ -9,7 +9,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.gtl.fonecta.client.DataService;
 import com.gtl.fonecta.client.DataServiceAsync;
-import com.gtl.fonecta.client.GWT_SMPPSim;
+import com.gtl.fonecta.client.GwtSmppSim;
 
 /**
  * @author devang
@@ -17,7 +17,7 @@ import com.gtl.fonecta.client.GWT_SMPPSim;
  */
 public class MessageHandler implements ClickHandler {
 
-	GWT_SMPPSim gwtSMPPSim;
+	GwtSmppSim gwtSMPPSim;
 
 	/**
 	 * Default constructor
@@ -30,7 +30,7 @@ public class MessageHandler implements ClickHandler {
 	 * 
 	 * @param gwtSMPPSim
 	 */
-	public MessageHandler(GWT_SMPPSim gwtSMPPSim) {
+	public MessageHandler(GwtSmppSim gwtSMPPSim) {
 		this.gwtSMPPSim = gwtSMPPSim;
 	}
 
@@ -41,7 +41,7 @@ public class MessageHandler implements ClickHandler {
 	 * com.google.gwt.event.dom.client.ClickHandler#onClick(com.google.gwt.event
 	 * .dom.client.ClickEvent)
 	 */
-	@SuppressWarnings("deprecation")
+	
 	@Override
 	public void onClick(ClickEvent event) {
 
@@ -67,8 +67,16 @@ public class MessageHandler implements ClickHandler {
 					}
 				});
 		
-		String host = gwtSMPPSim.getHiddenHost().getValue();
-		int port = Integer.parseInt(gwtSMPPSim.getHiddenHttpPort().getValue());
+		//String host = gwtSMPPSim.getHiddenHost().getValue();
+		//int port = Integer.parseInt(gwtSMPPSim.getHiddenHttpPort().getValue());
+		String host = "localhost";
+		if(gwtSMPPSim.getHiddenHost().getValue().length()>0){
+			host=gwtSMPPSim.getHiddenHost().getValue();
+		}
+		int port = 9999;
+		if(gwtSMPPSim.getHiddenHttpPort().getValue().length()>0){
+			port =Integer.parseInt(gwtSMPPSim.getHiddenHttpPort().getValue()); 
+		}
 
 		String url = "http://"
 				+ host
@@ -95,7 +103,7 @@ public class MessageHandler implements ClickHandler {
 	/**
 	 * @return the gwtSMPPSim
 	 */
-	public GWT_SMPPSim getGwtSMPPSim() {
+	public GwtSmppSim getGwtSMPPSim() {
 		return gwtSMPPSim;
 	}
 
@@ -103,7 +111,7 @@ public class MessageHandler implements ClickHandler {
 	 * @param gwtSMPPSim
 	 *            the gwtSMPPSim to set
 	 */
-	public void setGwtSMPPSim(GWT_SMPPSim gwtSMPPSim) {
+	public void setGwtSMPPSim(GwtSmppSim gwtSMPPSim) {
 		this.gwtSMPPSim = gwtSMPPSim;
 	}
 }

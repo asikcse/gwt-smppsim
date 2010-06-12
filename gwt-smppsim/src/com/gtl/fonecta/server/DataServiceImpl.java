@@ -81,20 +81,20 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 
 		for (Message message : listMessage) {
 			if (!map.containsKey("handsetNo")) {
-				map.put("handsetNo", message.getSource_addr().toString());
+				map.put("handsetNo", message.getSourceAddr().toString());
 			}
 
 			if (map.containsKey("serviceNo")) {
-				map.put("serviceNo", message.getDest_addr().toString());
+				map.put("serviceNo", message.getDestAddr().toString());
 			}
-			String key = message.getMessage_type()
+			String key = message.getMessageType()
 					+ message.getMsgId().toString();
 			String value = "<font face='sans-serif' color='gray'>"
-					+ message.getSend_time().toString().replace(".0", "").replace(" ", "&nbsp;")
-					+ "&nbsp;&nbsp;[" + message.getSource_addr().toString() + "->"
-					+ message.getDest_addr().toString() + "]"
+					+ message.getSendTime().toString().replace(".0", "").replace(" ", "&nbsp;")
+					+ "&nbsp;&nbsp;[" + message.getSourceAddr().toString() + "->"
+					+ message.getDestAddr().toString() + "]"
 					+ "</font> <br> <font face='sans-serif'>"
-					+ message.getShort_message() + ". </font>";
+					+ message.getShortMessage() + ". </font>";
 			map.put(key, value);
 		}
 
@@ -119,14 +119,14 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 		map.put("handsetNo", handsetNo);
 		map.put("serviceNo", serviceNo);
 		for (Message message : listMessage) {
-			String key = message.getMessage_type()
+			String key = message.getMessageType()
 					+ message.getMsgId().toString();
 			String value = "<font face='sans-serif' color='gray'>"
-					+ message.getSend_time().toString().replace(".0", "")
-					+ "  [" + message.getSource_addr().toString() + "->"
-					+ message.getDest_addr().toString() + "]"
+					+ message.getSendTime().toString().replace(".0", "")
+					+ "  [" + message.getSourceAddr().toString() + "->"
+					+ message.getDestAddr().toString() + "]"
 					+ "</font> <br> <font face='sans-serif'>"
-					+ message.getShort_message() + ". </font>";
+					+ message.getShortMessage() + ". </font>";
 			map.put(key, value);
 		}
 
@@ -144,11 +144,11 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 			String shortMessage, Timestamp sendTime) {
 
 		Message message = new Message();
-		message.setSource_addr(new Long(handsetNo));
-		message.setDest_addr(new Long(serviceNo));
-		message.setShort_message(shortMessage);
-		message.setMessage_type("MO");
-		message.setSend_time(sendTime);
+		message.setSourceAddr(new Long(handsetNo));
+		message.setDestAddr(new Long(serviceNo));
+		message.setShortMessage(shortMessage);
+		message.setMessageType("MO");
+		message.setSendTime(sendTime);
 
 		MessageService messageService = new MessageServiceImpl();
 		messageService.insertMoMessage(message);
