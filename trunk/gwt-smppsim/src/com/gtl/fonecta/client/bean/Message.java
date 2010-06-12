@@ -10,11 +10,11 @@ public class Message {
 
 	// Fields
 	private Integer msgId;
-	private Long source_addr;
-	private Long dest_addr;
-	private String short_message;
-	private String message_type;
-	private Timestamp send_time;
+	private Long sourceAddr;
+	private Long destAddr;
+	private String shortMessage;
+	private String messageType;
+	private Timestamp sendTime;
 
 	// Constructors
 
@@ -38,15 +38,15 @@ public class Message {
 			String shortMessage, String messageType, Timestamp sendTime) {
 		super();
 		this.msgId = msgId;
-		source_addr = sourceAddr;
-		dest_addr = destAddr;
-		short_message = shortMessage;
-		message_type = messageType;
-		send_time = sendTime;
+		this.sourceAddr = sourceAddr;
+		this.destAddr = destAddr;
+		this.shortMessage = shortMessage;
+		this.messageType = messageType;
+		this.sendTime = sendTime;
 	}
 
 	// Property accessors
-
+	
 	/**
 	 * @return the msgId
 	 */
@@ -55,89 +55,84 @@ public class Message {
 	}
 
 	/**
-	 * @param msgId
-	 *            the msgId to set
+	 * @param msgId the msgId to set
 	 */
 	public void setMsgId(Integer msgId) {
 		this.msgId = msgId;
 	}
 
 	/**
-	 * @return the source_addr
+	 * @return the sourceAddr
 	 */
-	public Long getSource_addr() {
-		return source_addr;
+	public Long getSourceAddr() {
+		return sourceAddr;
 	}
 
 	/**
-	 * @param sourceAddr
-	 *            the source_addr to set
+	 * @param sourceAddr the sourceAddr to set
 	 */
-	public void setSource_addr(Long sourceAddr) {
-		source_addr = sourceAddr;
+	public void setSourceAddr(Long sourceAddr) {
+		this.sourceAddr = sourceAddr;
 	}
 
 	/**
-	 * @return the dest_addr
+	 * @return the destAddr
 	 */
-	public Long getDest_addr() {
-		return dest_addr;
+	public Long getDestAddr() {
+		return destAddr;
 	}
 
 	/**
-	 * @param destAddr
-	 *            the dest_addr to set
+	 * @param destAddr the destAddr to set
 	 */
-	public void setDest_addr(Long destAddr) {
-		dest_addr = destAddr;
+	public void setDestAddr(Long destAddr) {
+		this.destAddr = destAddr;
 	}
 
 	/**
-	 * @return the short_message
+	 * @return the shortMessage
 	 */
-	public String getShort_message() {
-		return short_message;
+	public String getShortMessage() {
+		return shortMessage;
 	}
 
 	/**
-	 * @param shortMessage
-	 *            the short_message to set
+	 * @param shortMessage the shortMessage to set
 	 */
-	public void setShort_message(String shortMessage) {
-		short_message = shortMessage;
+	public void setShortMessage(String shortMessage) {
+		this.shortMessage = shortMessage;
 	}
 
 	/**
-	 * @return the message_type
+	 * @return the messageType
 	 */
-	public String getMessage_type() {
-		return message_type;
+	public String getMessageType() {
+		return messageType;
 	}
 
 	/**
-	 * @param messageType
-	 *            the message_type to set
+	 * @param messageType the messageType to set
 	 */
-	public void setMessage_type(String messageType) {
-		message_type = messageType;
+	public void setMessageType(String messageType) {
+		this.messageType = messageType;
 	}
 
 	/**
-	 * @return the send_time
+	 * @return the sendTime
 	 */
-	public Timestamp getSend_time() {
-		return send_time;
+	public Timestamp getSendTime() {
+		return sendTime;
 	}
 
 	/**
-	 * @param sendTime
-	 *            the send_time to set
+	 * @param sendTime the sendTime to set
 	 */
-	public void setSend_time(Timestamp sendTime) {
-		send_time = sendTime;
+	public void setSendTime(Timestamp sendTime) {
+		this.sendTime = sendTime;
 	}
 	
 	public String toString(){		
-		return msgId+"\t"+source_addr+"\t"+dest_addr+"\t"+ short_message +"\t"+message_type+"\t"+send_time; 
+		return msgId+"\t"+sourceAddr+"\t"+destAddr+"\t"+ shortMessage +"\t"+messageType+"\t"+sendTime; 
 	}
+
 }

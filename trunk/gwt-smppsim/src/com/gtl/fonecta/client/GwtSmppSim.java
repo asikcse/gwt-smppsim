@@ -31,7 +31,7 @@ import com.gtl.fonecta.client.handler.MessageHandler;
  * @author devang
  */
 
-public class GWT_SMPPSim implements EntryPoint {
+public class GwtSmppSim implements EntryPoint {
 
 	private DataServiceAsync serviceProxy;
 	Map<String, String> initMap = new TreeMap<String, String>();
@@ -58,7 +58,7 @@ public class GWT_SMPPSim implements EntryPoint {
 	String serviceNo;
 	String shortMessage;
 
-	GWT_SMPPSim() {
+	GwtSmppSim() {
 		
 		serviceProxy = GWT.create(DataService.class);
 

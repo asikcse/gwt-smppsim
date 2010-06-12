@@ -9,7 +9,7 @@ import com.gtl.fonecta.server.HibernateSessionFactory;
  * 
  * @author devang
  */
-public class BaseHibernateDAO implements IBaseHibernateDAO {
+public class BaseHibernateDAO {
 
 	public Session getSession() {
 		return HibernateSessionFactory.getSession();

@@ -10,23 +10,23 @@
 			<generator class="increment"/>
 		</id>
 
-		<property name="source_addr" type="java.lang.Long">
+		<property name="sourceAddr" type="java.lang.Long">
 			<column name="source_addr" />
 		</property>
 
-		<property name="dest_addr" type="java.lang.Long">
+		<property name="destAddr" type="java.lang.Long">
 			<column name="dest_addr" />
 		</property>
 
-		<property name="short_message" type="java.lang.String">
+		<property name="shortMessage" type="java.lang.String">
 			<column name="short_message" />
 		</property>
 
-		<property name="message_type" type="java.lang.String">
+		<property name="messageType" type="java.lang.String">
 			<column name="message_type" />
 		</property>
 
-		<property name="send_time" type="java.sql.Timestamp">
+		<property name="sendTime" type="java.sql.Timestamp">
 			<column name="send_time" />
 		</property>
 
