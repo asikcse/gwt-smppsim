@@ -40,16 +40,16 @@ public class DerbyHibernateTest {
 		System.out.println("Inserting Record");
 		Message message = new Message();
 		//message.setMsgId(new Integer(2));
-		message.setSource_addr(new Long(9825300375L));
-		message.setDest_addr(new Long(333355778L));
-		message.setShort_message("This is Test Message x");
-		message.setMessage_type("MO");
+		message.setSourceAddr(new Long(9825300375L));
+		message.setDestAddr(new Long(333355778L));
+		message.setShortMessage("This is Test Message x");
+		message.setMessageType("MO");
 		Date now = new Date();
 		Timestamp sendTime = new Timestamp(now.getYear(), now.getMonth(), now
 				.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(),
 				0);
 
-		message.setSend_time(sendTime);
+		message.setSendTime(sendTime);
 		dao.save(message);
 		System.out.println("Inserting..." + message.toString());
 	}
