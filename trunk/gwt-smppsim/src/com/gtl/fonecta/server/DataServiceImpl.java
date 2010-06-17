@@ -34,14 +34,14 @@ public class DataServiceImpl extends RemoteServiceServlet implements
 				
 		ResourceBundle bundle = ResourceBundle.getBundle("com.gtl.fonecta.configuration");
 		configFile = bundle.getString("CONFIG_FILE");		
-
 		
 		arguemnts[0] = configFile;
 		try {
 			if (!isRunning) {
-				SMPPSim.main(arguemnts);
 				isRunning = true;
 				truncateMessage();
+				SMPPSim.main(arguemnts);
+								
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -184,6 +184,7 @@ public class MessageDAO extends BaseHibernateDAO {
 		Transaction transaction = null;
 		try {
 			log.info("Removing all messages...");
+			System.out.println("Removing all messages..."); 
 			session = getSession();
 			transaction = session.beginTransaction();
 			String queryString = "delete from Message";
