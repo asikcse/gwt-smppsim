@@ -1,5 +1,5 @@
 /****************************************************************************
- * GWT_SMPPSim.java
+ * GwtSmppSim.java
  * 
  * 
  *****************************************************************************/
@@ -26,7 +26,7 @@ import com.gtl.fonecta.client.handler.ChangeBtnHandler;
 import com.gtl.fonecta.client.handler.MessageHandler;
 
 /**
- * class <code>GWT_SMPPSim</code> is gwt GUI.
+ * class <code>GwtSmppSim</code> is gwt GUI.
  * 
  * @author devang
  */

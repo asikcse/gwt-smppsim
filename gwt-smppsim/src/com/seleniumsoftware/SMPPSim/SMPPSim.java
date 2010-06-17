@@ -41,9 +41,13 @@ V1.00 16/06/2001
 
 package com.seleniumsoftware.SMPPSim;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -152,10 +156,17 @@ public class SMPPSim {
 			showUsage();
 			return;
 		}
+						
+		
 		Properties props = new Properties();
 		// load the given properties
-		InputStream is = new FileInputStream(args[0]);
-		props.load(is);
+		/* start cahanges*/
+		///InputStream is = new FileInputStream(args[0]);		
+		///props.load(is);
+		SMPPSim smppsim = new SMPPSim();
+		props = smppsim.getPropertiesFromClasspath(args[0]);		
+		/* end cahanges*/
+		
 		initialise(props);
 		showLegals();
 		showConfiguration();
@@ -171,7 +182,7 @@ public class SMPPSim {
 			logger.log(Level.SEVERE, "Exception during start up", e);
 		}
 	}
-
+	
 	private static void showUsage() {
 		System.out.println("Invalid or missing arguments:");
 		System.out.println("Usage:");
@@ -189,11 +200,9 @@ public class SMPPSim {
 		http200Response = http200Message.getBytes();
 		http400Response = http400Message.getBytes();
 
-		maxConnectionHandlers = Integer.parseInt(props
-				.getProperty("SMPP_CONNECTION_HANDLERS"));
+		maxConnectionHandlers = Integer.parseInt(props.getProperty("SMPP_CONNECTION_HANDLERS"));
 		smppPort = Integer.parseInt(props.getProperty("SMPP_PORT"));
-		connectionHandlerClassName = props
-				.getProperty("CONNECTION_HANDLER_CLASS");
+		connectionHandlerClassName = props.getProperty("CONNECTION_HANDLER_CLASS");
 		protocolHandlerClassName = props.getProperty("PROTOCOL_HANDLER_CLASS");
 		lifeCycleManagerClassName = props.getProperty("LIFE_CYCLE_MANAGER");
 		String systemid_list = props.getProperty("SYSTEM_IDS", "");
@@ -1085,4 +1094,28 @@ public class SMPPSim {
 	public static void setEsme_to_esme(boolean esme_to_esme) {
 		SMPPSim.esme_to_esme = esme_to_esme;
 	}
+	
+	private Properties getPropertiesFromClasspath(String propFileName) throws IOException {
+
+		Properties props = new Properties();
+		
+		URL url =  ClassLoader.getSystemResource(propFileName);
+		
+		String filePath = getClass().getProtectionDomain().getCodeSource().getLocation().toString();
+		String path = new String();		
+				
+		if(url instanceof URL){		
+			props.load(new FileInputStream(new File(url.getFile())));	
+		} else if(filePath.contains("com/seleniumsoftware/SMPPSim/SMPPSim.class")){
+			path = filePath.replace("com/seleniumsoftware/SMPPSim/SMPPSim.class", "").replace("file:", "") + propFileName;		
+			InputStream is = new FileInputStream(path);		
+			props.load(is);
+		} else {
+			path = filePath.replace("file:", "") + propFileName;
+			InputStream is = new FileInputStream(path);
+			props.load(is);
+		}
+		
+        return props;
+    }
 }
